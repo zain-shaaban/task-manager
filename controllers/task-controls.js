@@ -36,7 +36,30 @@ const addtask=async(req,res)=>{
     }
 }
 
+const deleteTask=async(req,res)=>{
+    try{const id=req.params.id
+        const task=await Task.findByIdAndDelete(id);
+        if(task)
+        return res.status(203).json({
+            status:"success",
+            data:null
+        })
+        res.status(203).json({
+            status:"fail",
+            message:"This Id Is Not Exist..."
+        })
+
+    }catch(err){
+        res.status(500).json({
+            status:"error",
+            message:err.message
+        })
+    }
+
+}
+
 module.exports={
     getTasks,
-    addtask
+    addtask,
+    deleteTask
 }
