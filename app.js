@@ -11,8 +11,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({extended:true}))
 
 app.use("/", require("./routes/task-routes"));
+app.use("/", require("./routes/user-routes"));
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => console.log(`Server Listining On Port ${PORT}`));

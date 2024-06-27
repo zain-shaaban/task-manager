@@ -9,6 +9,10 @@ const taskSchema = new mongoose.Schema({
     required: true,
     default:new Date().toTimeString()
   },
+  UserId:{
+    type:String,
+    required:true
+  }
 });
 
 module.exports = mongoose.model("Task", taskSchema);
