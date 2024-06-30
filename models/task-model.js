@@ -13,7 +13,7 @@ const taskSchema = new mongoose.Schema({
     type:String,
     required:true
   },
-  imortant:{
+  important:{
     type:Number,
     required:true,
     default:0
