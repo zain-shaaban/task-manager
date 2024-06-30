@@ -12,6 +12,16 @@ const taskSchema = new mongoose.Schema({
   UserId:{
     type:String,
     required:true
+  },
+  imortant:{
+    type:Number,
+    required:true,
+    default:0
+  },
+  completed:{
+    type:Number,
+    required:true,
+    default:0
   }
 });
 

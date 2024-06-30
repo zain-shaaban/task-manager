@@ -11,7 +11,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/", require("./routes/task-routes"));
 app.use("/", require("./routes/user-routes"));

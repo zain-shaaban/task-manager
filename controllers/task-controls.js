@@ -6,12 +6,12 @@ const jwt = require("jsonwebtoken");
 const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ UserId: req.UserId }).sort({ date: "asc" });
-    const user=await User.findById(req.UserId);
+    const user = await User.findById(req.UserId);
     res.status(200).json({
       status: 1,
       data: {
         tasks,
-        name:user.name
+        name: user.name,
       },
     });
   } catch (error) {
@@ -24,15 +24,15 @@ const getTasks = async (req, res) => {
 
 const addtask = async (req, res) => {
   try {
-    const { content, date} = req.body;
+    const { content, date } = req.body;
 
     if (!content) {
-      res.status(500).json({
+      return res.status(500).json({
         status: 0,
         data: { content: "content is required!" },
       });
     }
-    const task = await Task.create({ content, date, UserId:req.UserId });
+    const task = await Task.create({ content, date, UserId: req.UserId });
     res.status(201).json({
       status: 1,
       data: { task },
@@ -66,55 +66,28 @@ const deleteTask = async (req, res) => {
   }
 };
 
-const register = async (req, res) => {
+const updatetask = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    const newUser = await User.create({ name, email, password });
-    const token = jwt.sign({ UserId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: 1000 * 60 * 60 * 24 * 30,
-    });
-    res.status(200).json({
-      status: 1,
-      data: { token },
-    });
-  } catch (error) {
-    if (error.code == 11000)
-      return res.status(500).json({
-        status: 0,
-        message: "This Email Is Already Exist",
+    const id = req.params.id;
+    const { content, date, important, completed } = req.body;
+    const task = await Task.findByIdAndUpdate(
+      id,
+      { content, date, important, completed },
+      { new: true, runValidators: true }
+    );
+    if (task)
+      return res.status(203).json({
+        status: 1,
+        data: {task},
       });
+    res.status(203).json({
+      status: 0,
+      message: "This Id Is Not Exist...",
+    });
+  } catch (err) {
     res.status(500).json({
       status: 0,
-      message: error.message,
-    });
-  }
-};
-
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).json({
-        status: 0,
-        message: "This Email Is Not Exist",
-      });
-    if (!user.Auth(password))
-      return res.status(404).json({
-        status: 0,
-        message: "The Password Is Wrong",
-      });
-    const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: 1000 * 60 * 60 * 24 * 30,
-    });
-    res.status(200).json({
-      status: 1,
-      data: { token },
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: 0,
-      message: error.message,
+      message: err.message,
     });
   }
 };
@@ -123,8 +96,7 @@ module.exports = {
   getTasks,
   addtask,
   deleteTask,
-  register,
-  login,
+  updatetask
 };
 
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NjdkNzQzZGEyYWU4OTY0YjgwYmY5ZTYiLCJpYXQiOjE3MTk0OTk2MDAsImV4cCI6NDMxMTQ5OTYwMH0.XFJ3GObKOz4q3KO-qDNHyIlzaLAFxGgS1luh9yYriIA
