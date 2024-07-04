@@ -12,6 +12,7 @@ const getTasks = async (req, res) => {
       data: {
         tasks,
         name: user.name,
+        appearance: user.appearance,
       },
     });
   } catch (error) {
@@ -78,7 +79,7 @@ const updatetask = async (req, res) => {
     if (task)
       return res.status(203).json({
         status: 1,
-        data: {task},
+        data: { task },
       });
     res.status(203).json({
       status: 0,
@@ -96,7 +97,7 @@ module.exports = {
   getTasks,
   addtask,
   deleteTask,
-  updatetask
+  updatetask,
 };
 
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NjdkNzQzZGEyYWU4OTY0YjgwYmY5ZTYiLCJpYXQiOjE3MTk0OTk2MDAsImV4cCI6NDMxMTQ5OTYwMH0.XFJ3GObKOz4q3KO-qDNHyIlzaLAFxGgS1luh9yYriIA
