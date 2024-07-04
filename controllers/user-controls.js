@@ -57,10 +57,10 @@ const login = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password,appearance } = req.body;
     const userUpdated = await User.findByIdAndUpdate(
       req.UserId,
-      { name, email, password },
+      { name, email, password,appearance },
       { new: true, runValidators: true }
     );
     if (!userUpdated) {
