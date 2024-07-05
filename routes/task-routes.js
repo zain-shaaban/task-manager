@@ -6,7 +6,7 @@ const {
   deleteTask,
   updatetask
 } = require("../controllers/task-controls");
-const { Autherizarion } = require("../utils/auth");
+const { Autherizarion } = require("../MiddleWares/auth");
 
 router.route("/api/tasks").post(Autherizarion, getTasks);
 router.route("/api/addtask").post(Autherizarion, addtask);

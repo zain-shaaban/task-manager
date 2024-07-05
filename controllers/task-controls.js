@@ -2,97 +2,59 @@ require("dotenv").config();
 const Task = require("../models/task-model");
 const User = require("../models/user-model");
 const jwt = require("jsonwebtoken");
+const asyncWrapper = require("../MiddleWares/asyncWrapper");
+const CustomError = require("../utils/customeError");
 
-const getTasks = async (req, res) => {
-  try {
-    const tasks = await Task.find({ UserId: req.UserId }).sort({ date: "asc" });
-    const user = await User.findById(req.UserId);
-    res.status(200).json({
+const getTasks = asyncWrapper(async (req, res) => {
+  const tasks = await Task.find({ UserId: req.UserId }).sort({ date: "asc" });
+  const user = await User.findById(req.UserId);
+  res.status(200).json({
+    status: 1,
+    data: {
+      tasks,
+      name: user.name,
+      appearance: user.appearance,
+      email: user.email,
+    },
+  });
+});
+
+const addtask = asyncWrapper(async (req, res) => {
+  const { content, date, important } = req.body;
+  if (!content) throw new CustomError("Content Is Required", 500);
+  await Task.create({ content, date, UserId: req.UserId, important });
+  res.status(201).json({
+    status: 1,
+    data: null,
+  });
+});
+
+const deleteTask = asyncWrapper(async (req, res) => {
+  const id = req.params.id;
+  const task = await Task.findByIdAndDelete(id);
+  if (task)
+    return res.status(203).json({
       status: 1,
-      data: {
-        tasks,
-        name: user.name,
-        appearance: user.appearance,
-        email: user.email,
-      },
+      data: null,
     });
-  } catch (error) {
-    res.status(500).json({
-      status: 0,
-      message: error.message,
-    });
-  }
-};
+  throw new CustomError("This TaskId Is Not Exist", 404);
+});
 
-const addtask = async (req, res) => {
-  try {
-    const { content, date } = req.body;
-
-    if (!content) {
-      return res.status(500).json({
-        status: 0,
-        data: { content: "content is required!" },
-      });
-    }
-    const task = await Task.create({ content, date, UserId: req.UserId });
-    res.status(201).json({
+const updatetask = asyncWrapper(async (req, res) => {
+  const id = req.params.id;
+  const { content, date, important, completed } = req.body;
+  const task = await Task.findByIdAndUpdate(
+    id,
+    { content, date, important, completed },
+    { new: true, runValidators: true }
+  );
+  if (task)
+    return res.status(203).json({
       status: 1,
-      data: { task },
+      data: null,
     });
-  } catch (err) {
-    res.status(500).json({
-      status: 0,
-      message: err.message,
-    });
-  }
-};
-
-const deleteTask = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const task = await Task.findByIdAndDelete(id);
-    if (task)
-      return res.status(203).json({
-        status: 1,
-        data: null,
-      });
-    res.status(203).json({
-      status: 0,
-      message: "This Id Is Not Exist...",
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 0,
-      message: err.message,
-    });
-  }
-};
-
-const updatetask = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { content, date, important, completed } = req.body;
-    const task = await Task.findByIdAndUpdate(
-      id,
-      { content, date, important, completed },
-      { new: true, runValidators: true }
-    );
-    if (task)
-      return res.status(203).json({
-        status: 1,
-        data: { task },
-      });
-    res.status(203).json({
-      status: 0,
-      message: "This Id Is Not Exist...",
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 0,
-      message: err.message,
-    });
-  }
-};
+  throw new CustomError("This TaskId Is Not Exist", 404);
+});
 
 module.exports = {
   getTasks,
