@@ -58,8 +58,8 @@ const login = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { name, email, password,appearance } = req.body;
-    const userUpdated = await User.findByIdAndUpdate(
-      req.UserId,
+    const userUpdated = await User.findOneAndUpdate(
+      {_id:req.UserId},
       { name, email, password,appearance },
       { new: true, runValidators: true }
     );

@@ -26,6 +26,12 @@ userSchema.pre("save",function(next){
     next();
 })
 
+userSchema.pre("findOneAndUpdate",function(next){
+    if(this._update.password)
+        this._update.password=bcrypt.hashSync(this._update.password,bcrypt.genSaltSync());
+    next();
+})
+
 userSchema.method("Auth",function(password){
     return bcrypt.compareSync(password,this.password);
 })
