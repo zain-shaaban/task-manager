@@ -13,6 +13,7 @@ const getTasks = async (req, res) => {
         tasks,
         name: user.name,
         appearance: user.appearance,
+        email: user.email,
       },
     });
   } catch (error) {
@@ -99,5 +100,3 @@ module.exports = {
   deleteTask,
   updatetask,
 };
-
-//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NjdkNzQzZGEyYWU4OTY0YjgwYmY5ZTYiLCJpYXQiOjE3MTk0OTk2MDAsImV4cCI6NDMxMTQ5OTYwMH0.XFJ3GObKOz4q3KO-qDNHyIlzaLAFxGgS1luh9yYriIA
