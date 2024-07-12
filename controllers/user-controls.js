@@ -50,9 +50,12 @@ const updateUser = asyncWrapper(async (req, res) => {
 const confirmedUser=asyncWrapper(async(req,res)=>{
   const {UserId}=jwt.verify(req.body.token,process.env.AUTH_SECRET);
   await User.updateOne({_id:UserId},{confirmed:true});
+  const token = jwt.sign({UserId}, process.env.JWT_SECRET, {
+    expiresIn: 1000*60*60*24*30
+  });
   res.status(200).json({
     status: 1,
-    data: null,
+    data: {token},
   });
 })
 module.exports = {
