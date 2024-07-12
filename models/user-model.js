@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+  confirmed:{
+    type:Boolean,
+    default:false
+  }
 });
 
 userSchema.pre("save", function (next) {

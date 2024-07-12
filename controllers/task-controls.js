@@ -6,7 +6,7 @@ const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const CustomError = require("../utils/customeError");
 
 const getTasks = asyncWrapper(async (req, res) => {
-  const tasks = await Task.find({ UserId: req.UserId }).sort({ date: "asc" });
+  const tasks = await Task.find({ UserId: req.UserId },{__v:false}).sort({ date: "asc" });
   const user = await User.findById(req.UserId);
   res.status(200).json({
     status: 1,
