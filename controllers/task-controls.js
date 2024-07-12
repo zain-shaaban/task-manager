@@ -22,7 +22,7 @@ const getTasks = asyncWrapper(async (req, res) => {
 const addtask = asyncWrapper(async (req, res) => {
   const { content, date, important, completed } = req.body;
   if (!content) throw new CustomError("Content Is Required", 500);
-  await Task.create({
+  const newTask=await Task.create({
     content,
     date,
     UserId: req.UserId,
@@ -31,7 +31,7 @@ const addtask = asyncWrapper(async (req, res) => {
   });
   res.status(201).json({
     status: 1,
-    data: null,
+    data: {id:newTask._id},
   });
 });
 
