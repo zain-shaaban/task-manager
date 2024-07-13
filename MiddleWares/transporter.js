@@ -10,7 +10,7 @@ const createNewUser = asyncWrapper(async (email, token) => {
         }
       },
     );
-    const url = `https://task-manager-experiment-with-backend.pages.dev/confirmation/${token}`;
+    const url = `https://task-manager-experiment-with-backend.pages.dev/confirmation.html/?confirmation_token=${token}`;
     await transporter.sendMail({
       from:'"Task Manager" <taskmanager@gmail.com>',
       to: email,
