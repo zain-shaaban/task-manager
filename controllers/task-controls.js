@@ -63,7 +63,7 @@ const updatetask = asyncWrapper(async (req, res) => {
 });
 
 const deleteCompletedTasks = asyncWrapper(async (req, res) => {
-  await Task.deleteMany({date:{$lt:Date.now()-(1000)}})
+  await Task.deleteMany({date:{$lt:Date.now()-(1000*60*60*24*7)}})
   res.send("Delete")
 });
 
