@@ -6,11 +6,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    unique: true,
-    required: true,
-  },
   password: {
     type: String,
     required: true,
@@ -26,6 +21,11 @@ const userSchema = new mongoose.Schema({
   auto_delete:{
     type:Boolean,
     default:0
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
   }
 });
 
