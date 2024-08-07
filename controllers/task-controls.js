@@ -1,7 +1,6 @@
 require("dotenv").config();
 const Task = require("../models/task-model");
 const User = require("../models/user-model");
-const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const CustomError = require("../utils/customeError");
 
@@ -15,6 +14,7 @@ const getTasks = asyncWrapper(async (req, res) => {
       name: user.name,
       appearance: user.appearance,
       email: user.email,
+      auto_delete:user.auto_delete
     },
   });
 });
