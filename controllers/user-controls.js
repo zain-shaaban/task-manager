@@ -35,10 +35,10 @@ const login = asyncWrapper(async (req, res) => {
 });
 
 const updateUser = asyncWrapper(async (req, res) => {
-  const { name, email, password, appearance } = req.body;
+  const { name, email, password, appearance,auto_delete} = req.body;
   await User.updateOne(
     { _id: req.UserId },
-    { name, email, password, appearance },
+    { name, email, password, appearance,auto_delete },
     { new: true, runValidators: true }
   );
   res.status(203).json({

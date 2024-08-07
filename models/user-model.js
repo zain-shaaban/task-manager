@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
   confirmed:{
     type:Boolean,
     default:false
+  },
+  auto_delete:{
+    type:Boolean,
+    default:0
   }
 });
 
