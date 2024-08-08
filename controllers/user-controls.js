@@ -8,7 +8,7 @@ const CustomError = require("../utils/customeError");
 const register = asyncWrapper(async (req, res) => {
   const { name, email, password } = req.body;
   const newUser = await User.create({ name, email, password });
-  const token = jwt.sign({ UserId: newUser._id }, process.env.AUTH_SECRET, {
+  const token = jwt.sign({ UserId: newUser._id}, process.env.AUTH_SECRET, {
     expiresIn: '1d',
   });
   transporter(email,token)
@@ -36,15 +36,25 @@ const login = asyncWrapper(async (req, res) => {
 
 const updateUser = asyncWrapper(async (req, res) => {
   const { name, email, password, appearance,auto_delete} = req.body;
-  await User.updateOne(
-    { _id: req.UserId },
+  const user=await User.findOneAndUpdate(
+    {_id:req.UserId},
     { name, email, password, appearance,auto_delete },
     { new: true, runValidators: true }
   );
-  res.status(203).json({
-    status: 1,
-    data: null,
+  if(password){
+  const token = jwt.sign({ UserId: user._id,update:true}, process.env.JWT_SECRET, {
+    expiresIn: 1000*60*60*24*30
   });
+  res.status(200).json({
+    status: 1,
+    data: {token},
+  });}
+  else{
+    res.status(200).json({
+      status:1,
+      data:null
+    })
+  }
 });
 
 const confirmedUser=asyncWrapper(async(req,res)=>{

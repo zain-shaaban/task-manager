@@ -1,18 +1,22 @@
 const jwt = require("jsonwebtoken");
+const asyncWrapper=require("./asyncWrapper")
+const User=require("../models/user-model")
 require("dotenv").config();
+const costumeError=require("../utils/customeError")
 
-const Autherizarion = function (req, res, next) {
-  try {
-    const token = req.body.token;
-      const auth = jwt.verify(token, process.env.JWT_SECRET);
-      if (auth) {
-        req.UserId = auth.UserId;
-        return next();
+const Autherizarion = asyncWrapper(async function (req, res, next) {
+  const token = req.body.token;
+    const auth = jwt.verify(token, process.env.JWT_SECRET);
+    if (auth) {
+      const user=await User.findById(auth.UserId);
+      if(user.exp==-1||user.exp<=auth.exp){
+        if(auth.update)
+          await user.updateOne({exp:auth.exp})
       }
-    }catch (error) {
-      error.message= "Not Autherized";
-      next(error);
-    };
-  };
+      else
+        throw new costumeError("Token Not Valid",400)
+      req.UserId = auth.UserId;
+      return next();
+  }});
 
 module.exports = { Autherizarion };

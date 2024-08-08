@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true,
+  },
+  exp:{
+    type:Number,
+    default:-1
   }
 });
 
@@ -34,7 +38,7 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-userSchema.pre("updateOne", function (next) {
+userSchema.pre("findOneAndUpdate", function (next) {
   if (this._update.password)
     this._update.password = bcrypt.hashSync(
       this._update.password,

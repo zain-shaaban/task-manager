@@ -36,18 +36,20 @@ const addtask = asyncWrapper(async (req, res) => {
 });
 
 const deleteTask = asyncWrapper(async (req, res) => {
-  const id = req.params.id;
-  const task = await Task.findByIdAndDelete(id);
-  if (task)
-    return res.status(203).json({
-      status: 1,
-      data: null,
-    });
-  throw new CustomError("This TaskId Is Not Exist", 404);
+  const ids = req.body.ids;
+  for(let id of ids){
+    const task=await Task.findByIdAndDelete(id);
+    if(!task)
+      throw new CustomError(`This Task Id Is Not Found ${id}`,404)
+  }
+  res.status(200).json({
+    status:1,
+    data:null
+  })
 });
 
 const updatetask = asyncWrapper(async (req, res) => {
-  const id = req.params.id;
+  const id=req.params.id
   const { content, date, important, completed } = req.body;
   const task = await Task.findByIdAndUpdate(
     id,
@@ -63,7 +65,7 @@ const updatetask = asyncWrapper(async (req, res) => {
 });
 
 const deleteCompletedTasks = asyncWrapper(async (req, res) => {
-  await Task.deleteMany({date:{$lt:Date.now()-(1000*60*60*24*7)}})
+  await Task.deleteMany({completed:1,date:{$lt:Date.now()-(1000*60*60*24*7)}})
   res.send("Delete")
 });
 
