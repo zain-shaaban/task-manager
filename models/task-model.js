@@ -21,6 +21,10 @@ const taskSchema = new mongoose.Schema({
     type:Number,
     required:true,
     default:0
+  },
+  last_updated:{
+    type:Number,
+    required:true
   }
 });
 

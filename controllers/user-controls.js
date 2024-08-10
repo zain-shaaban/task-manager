@@ -13,7 +13,7 @@ const register = asyncWrapper(async (req, res) => {
     expiresIn: "1d",
   });
   transporter(email, token);
-  res.status(200).json({
+  res.status(201).json({
     status: 1,
     data: null,
   });
@@ -24,9 +24,9 @@ const login = asyncWrapper(async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) throw new CustomError("This Email Is Not Exist", 404);
   if (!user.confirmed)
-    throw new CustomError("This Email Is Not Confirmed", 404);
+    throw new CustomError("This Email Is Not Confirmed", 500);
   if (!user.Auth(password))
-    throw new CustomError("This Password Is Wrong", 404);
+    throw new CustomError("This Password Is Wrong", 500);
   const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
     expiresIn: 1000 * 60 * 60 * 24 * 30,
   });

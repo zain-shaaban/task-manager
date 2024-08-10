@@ -25,6 +25,7 @@ const addtask = asyncWrapper(async (req, res) => {
   const newTask=await Task.create({
     content,
     date,
+    last_updated:date,
     UserId: req.UserId,
     important,
     completed,
@@ -42,7 +43,7 @@ const deleteTask = asyncWrapper(async (req, res) => {
     if(!task)
       throw new CustomError(`This Task Id Is Not Found ${id}`,404)
   }
-  res.status(200).json({
+  res.status(202).json({
     status:1,
     data:null
   })
@@ -50,10 +51,10 @@ const deleteTask = asyncWrapper(async (req, res) => {
 
 const updatetask = asyncWrapper(async (req, res) => {
   const id=req.params.id
-  const { content, date, important, completed } = req.body;
+  const { content, last_updated, important, completed } = req.body;
   const task = await Task.findByIdAndUpdate(
     id,
-    { content, date, important, completed },
+    { content, last_updated, important, completed },
     { new: true, runValidators: true }
   );
   if (task)
