@@ -14,7 +14,7 @@ const Autherizarion = asyncWrapper(async function (req, res, next) {
           await user.updateOne({exp:auth.exp})
       }
       else
-        throw new costumeError("Token Not Valid",400)
+        throw new costumeError("invalid token",400)
       req.UserId = auth.UserId;
       return next();
   }});

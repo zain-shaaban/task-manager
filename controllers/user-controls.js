@@ -22,11 +22,11 @@ const register = asyncWrapper(async (req, res) => {
 const login = asyncWrapper(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user) throw new CustomError("This Email Is Not Exist", 404);
+  if (!user) throw new CustomError("the email is not exist", 404);
   if (!user.confirmed)
-    throw new CustomError("This Email Is Not Confirmed", 500);
+    throw new CustomError("the email is unconfirmed", 500);
   if (!user.Auth(password))
-    throw new CustomError("This Password Is Wrong", 500);
+    throw new CustomError("the password is wrong", 500);
   const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
     expiresIn: 1000 * 60 * 60 * 24 * 30,
   });
@@ -77,12 +77,14 @@ const confirmedUser = asyncWrapper(async (req, res) => {
 
 const deleteuser = asyncWrapper(async (req, res) => {
   const UserId = req.UserId;
-  if(UserId){
-  await User.deleteOne({_id:UserId});
-  await Task.deleteMany({UserId})
-  return res.status(202).json({status:1,data:null})
-}
-  throw new CustomError("User Id Is Not Exist",404)
+  const password=req.body.password;
+  const user=await User.findOne({_id:UserId})
+  if(password==user.password){
+    await User.deleteOne({_id:UserId})
+    await Task.deleteOne({UserId})
+    return res.status(202).json({status:1,data:null})
+  }
+  throw new CustomError("wrong password",500)
 });
 module.exports = {
   register,

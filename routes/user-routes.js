@@ -1,5 +1,11 @@
 const express = require("express");
-const { register, login, updateUser ,confirmedUser,deleteuser} = require("../controllers/user-controls");
+const {
+  register,
+  login,
+  updateUser,
+  confirmedUser,
+  deleteuser,
+} = require("../controllers/user-controls");
 const { Autherizarion } = require("../MiddleWares/auth");
 
 const router = express.Router();
@@ -15,7 +21,7 @@ const router = express.Router();
  * @swagger
  * /api/user/register:
  *   post:
- *     summary: Register to make account on the website
+ *     summary: Create an account on the website
  *     tags: [User]
  *     requestBody:
  *       required: true
@@ -33,7 +39,7 @@ const router = express.Router();
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 1
+ *                   description: Response status ,always its 1
  *                 data:
  *                   type: null
  *                   description: No data exist
@@ -49,13 +55,13 @@ const router = express.Router();
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 0
+ *                   description: Response status ,always its 0
  *                 message:
  *                   type: string
- *                   description: explain what is the error
+ *                   description: Explanation of the error
  *               example:
  *                 status: 0
- *                 message: This Email Is Already Exist
+ *                 message: the email is already used
  */
 
 router.route("/api/user/register").post(register);
@@ -64,7 +70,7 @@ router.route("/api/user/register").post(register);
  * @swagger
  * /api/user/login:
  *   post:
- *     summary: Login on the website
+ *     summary: Log in to the website
  *     tags: [User]
  *     requestBody:
  *       required: true
@@ -87,7 +93,7 @@ router.route("/api/user/register").post(register);
  *               password: test123
  *     responses:
  *       200:
- *         description: The login completed successfully
+ *         description: The login has completed successfully
  *         content:
  *           application/json:
  *             schema:
@@ -95,16 +101,16 @@ router.route("/api/user/register").post(register);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 1
+ *                   description: Response status ,always its 1
  *                 data:
  *                   type: object
  *                   properties:
  *                     token:
  *                       type: string
- *                       description: Access token should be saved
+ *                       description: Access token ,should be saved
  *               example:
  *                 status: 1
- *                 data: {"token":zelkdas;lksadas54d5a4sd54as1d21a2s1d21asdlklaksld}
+ *                 data: {"token":eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
  *       404:
  *         description: The email is not exist
  *         content:
@@ -114,13 +120,13 @@ router.route("/api/user/register").post(register);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 0
+ *                   description: Response status ,always its 0
  *                 message:
  *                   type: string
- *                   description: explain what is the error
+ *                   description: Explanation of the error
  *               example:
  *                 status: 0
- *                 message: This Email Is Not Exist
+ *                 message: the email is not exist
  *       500:
  *         description: The password is wrong or the email is not confirmed
  *         content:
@@ -130,17 +136,22 @@ router.route("/api/user/register").post(register);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 0
+ *                   description: Response status ,always its 0
  *                 message:
  *                   type: string
- *                   description: explain what is the error
- *               example:
- *                 status: 0
- *                 message: This Password Is Wrong
+ *                   description: Explanation of the error
+ *             examples:
+ *               Wrong password:
+ *                 value:
+ *                   status: 0
+ *                   message: the password is wrong
+ *               Unconfirmed email:
+ *                 value:
+ *                   status: 0
+ *                   message: the email is unconfirmed
  */
 
 router.route("/api/user/login").post(login);
-
 
 /**
  * @swagger
@@ -156,11 +167,11 @@ router.route("/api/user/login").post(login);
  *             required:
  *               - token
  *             properties:
- *               token: 
+ *               token:
  *                 type: string
- *                 description: authentication token exists on your Gmail after register
+ *                 description: authentication token is existing on your Gmail after register
  *             example:
- *               token: sdlklaksdlklas55d1as5d15a1sd5
+ *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *     responses:
  *       200:
  *         description: The account has confirmed successfully
@@ -171,18 +182,18 @@ router.route("/api/user/login").post(login);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 1
+ *                   description: Response status ,always its 1
  *                 data:
  *                   type: object
  *                   properties:
  *                     token:
  *                       type: string
- *                       description: Access token should be saved
+ *                       description: Access token ,should be saved
  *               example:
  *                 status: 1
- *                 data: {"token":zelkdas;lksadas54d5a4sd54as1d21a2s1d21asdlklaksld}
+ *                 data: {"token": eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
  *       500:
- *         description: The authentication token not valid
+ *         description: The authentication token is invalid
  *         content:
  *           application/json:
  *             schema:
@@ -190,64 +201,15 @@ router.route("/api/user/login").post(login);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 0
+ *                   description: Response status ,always its 0
  *                 message:
  *                   type: string
- *                   description: explain what is the error
+ *                   description: Explanation of the error
  *               example:
  *                 status: 0
- *                 message: the token is not valid
+ *                 message: invalid signature
  */
 router.route("/api/user/confirm").patch(confirmedUser);
-
-/**
- * @swagger
- * /api/user/register:
- *   post:
- *     summary: Register to make account on the website
- *     tags: [User]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/User"
- *     responses:
- *       200:
- *         description: The account has created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                   description: Status of the operation ,always its 1
- *                 data:
- *                   type: null
- *                   description: No data exist
- *               example:
- *                 status: 1
- *                 data: null
- *       500:
- *         description: The email is already used by another account
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                   description: Status of the operation ,always its 0
- *                 message:
- *                   type: string
- *                   description: explain what is the error
- *               example:
- *                 status: 0
- *                 message: This Email Is Already Exist
- */
-
-router.route("/api/user/register").post(register);
 
 /**
  * @swagger
@@ -275,19 +237,19 @@ router.route("/api/user/register").post(register);
  *                 description: Password of the account
  *               apperance:
  *                 type: number
- *                 description: State of apperance, its 1 by default
+ *                 description: Apperance status, its 1 by default
  *               auto_delete:
  *                 type: number
- *                 description: used to delete completed task directly, its 0 by default
+ *                 description: Option to delete completed tasks directly, its 0 by default
  *             example:
- *               token: lkdlkalsdklsd45a4sd54a5s4ddsd
+ *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               email: test@gmail.com
  *               password: test123
  *               apperance: 3
  *               auto-delete: 1
  *     responses:
  *       200:
- *         description: The user information updated successfully
+ *         description: The user information has updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -295,18 +257,24 @@ router.route("/api/user/register").post(register);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 1
+ *                   description: Response status ,always its 1
  *                 data:
  *                   type: object
  *                   properties:
  *                     token:
  *                       type: string
- *                       description: Access token just if password updated else data is null
- *               example:
- *                 status: 1
- *                 data: {"token":zelkdas;lksadas54d5a4sd54as1d21a2s1d21asdlklaksld}
+ *                       description: Access token just if password has updated, else data is null
+ *             examples:
+ *               Password has updated:
+ *                 value:
+ *                   status: 1
+ *                   data: {"token":eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
+ *               Password has't updated:
+ *                 value:
+ *                   status: 1
+ *                   data: null
  *       500:
- *         description: The token is not valid
+ *         description: The token is invalid
  *         content:
  *           application/json:
  *             schema:
@@ -314,13 +282,13 @@ router.route("/api/user/register").post(register);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 0
+ *                   description: Response status ,always its 0
  *                 message:
  *                   type: string
- *                   description: explain what is the error
+ *                   description: Explanation of the error
  *               example:
  *                 status: 0
- *                 message: The token is not valid
+ *                 message: invalid token
  */
 router.route("/api/user/update").patch(Autherizarion, updateUser);
 
@@ -347,10 +315,10 @@ router.route("/api/user/update").patch(Autherizarion, updateUser);
  *                 type: string
  *                 description: Password of the account
  *             example:
- *               token: lkdlkalsdklsd45a4sd54a5s4ddsd
+ *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               password: test123
  *     responses:
- *       200:
+ *       202:
  *         description: The account has deleted successfully
  *         content:
  *           application/json:
@@ -359,7 +327,7 @@ router.route("/api/user/update").patch(Autherizarion, updateUser);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 1
+ *                   description: Response status ,always its 1
  *                 data:
  *                   type: null
  *                   description: No data returned
@@ -367,7 +335,7 @@ router.route("/api/user/update").patch(Autherizarion, updateUser);
  *                 status: 1
  *                 data: null
  *       500:
- *         description: The token is not valid or the password is wrong
+ *         description: The token is invalid or the password is wrong
  *         content:
  *           application/json:
  *             schema:
@@ -375,13 +343,19 @@ router.route("/api/user/update").patch(Autherizarion, updateUser);
  *               properties:
  *                 status:
  *                   type: number
- *                   description: Status of the operation ,always its 0
+ *                   description: Response status ,always its 0
  *                 message:
  *                   type: string
- *                   description: explain what is the error
- *               example:
- *                 status: 0
- *                 message: The password is wrong
+ *                   description: Explanation of the error
+ *             examples:
+ *               The password is wrong:
+ *                 value:
+ *                   status: 0
+ *                   message: wrong password
+ *               The token is wrong:
+ *                 value:
+ *                   status: 0
+ *                   message: invalid token
  */
 router.route("/api/user/delete").delete(Autherizarion, deleteuser);
 

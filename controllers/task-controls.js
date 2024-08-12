@@ -41,7 +41,7 @@ const deleteTask = asyncWrapper(async (req, res) => {
   for(let id of ids){
     const task=await Task.findByIdAndDelete(id);
     if(!task)
-      throw new CustomError(`This Task Id Is Not Found ${id}`,404)
+      throw new CustomError(`this task id is not exist ${id}`,404)
   }
   res.status(202).json({
     status:1,
@@ -62,7 +62,7 @@ const updatetask = asyncWrapper(async (req, res) => {
       status: 1,
       data: null,
     });
-  throw new CustomError("This TaskId Is Not Exist", 404);
+  throw new CustomError("the task id is not exist", 404);
 });
 
 const deleteCompletedTasks = asyncWrapper(async (req, res) => {

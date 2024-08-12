@@ -4,7 +4,7 @@ const asyncWrapper=(fn)=>{
             await fn(req,res,next);
         } catch (error) {
             if(error.code==11000)
-                error.message="This Email Is Already Exist"
+                error.message="the email is already used"
             next(error)
         }
     }
