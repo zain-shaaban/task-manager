@@ -79,7 +79,7 @@ const deleteuser = asyncWrapper(async (req, res) => {
   const UserId = req.UserId;
   const password=req.body.password;
   const user=await User.findOne({_id:UserId})
-  if(password==user.password){
+  if(user.Auth(password)){
     await User.deleteOne({_id:UserId})
     await Task.deleteOne({UserId})
     return res.status(202).json({status:1,data:null})
