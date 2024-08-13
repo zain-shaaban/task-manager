@@ -1,5 +1,4 @@
 const express = require("express");
-const User = require("../models/user-model");
 const Task = require("../models/task-model");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const { Autherizarion } = require("../MiddleWares/auth");
