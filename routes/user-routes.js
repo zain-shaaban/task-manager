@@ -111,24 +111,8 @@ router.route("/api/user/register").post(register);
  *               example:
  *                 status: 1
  *                 data: {"token":eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
- *       404:
- *         description: The email is not exist
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                   description: Response status ,always its 0
- *                 message:
- *                   type: string
- *                   description: Explanation of the error
- *               example:
- *                 status: 0
- *                 message: the email is not exist
  *       500:
- *         description: The password is wrong or the email is not confirmed
+ *         description: The password or email is wrong or the email is not confirmed
  *         content:
  *           application/json:
  *             schema:
@@ -144,7 +128,7 @@ router.route("/api/user/register").post(register);
  *               Wrong password:
  *                 value:
  *                   status: 0
- *                   message: the password is wrong
+ *                   message: email or password is incorrect
  *               Unconfirmed email:
  *                 value:
  *                   status: 0

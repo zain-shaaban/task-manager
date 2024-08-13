@@ -22,11 +22,11 @@ const register = asyncWrapper(async (req, res) => {
 const login = asyncWrapper(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user) throw new CustomError("the email is not exist", 404);
+  if (!user) throw new CustomError("email or password is incorrect", 500);
   if (!user.confirmed)
     throw new CustomError("the email is unconfirmed", 500);
   if (!user.Auth(password))
-    throw new CustomError("the password is wrong", 500);
+    throw new CustomError("email or password is incorrect", 500);
   const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
     expiresIn: 1000 * 60 * 60 * 24 * 30,
   });
