@@ -125,7 +125,7 @@ router.route("/api/user/register").post(register);
  *                   type: string
  *                   description: Explanation of the error
  *             examples:
- *               Wrong password:
+ *               Wrong email or password:
  *                 value:
  *                   status: 0
  *                   message: email or password is incorrect
