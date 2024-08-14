@@ -70,7 +70,7 @@ const router = express.Router();
  *                   properties:
  *                     _id:
  *                       type: string
- *                       description: 
+ *                       description:
  *                     content:
  *                       type: string
  *                       description: Task content
@@ -161,9 +161,10 @@ router.route("/api/offline").post(
         important,
         completed,
       });
-      idPairs.push({fakeID:_id,realID:newTask._id});
+      idPairs.push({ fakeID: _id, realID: newTask._id });
     }
-    res.json({status:1,data:{idPairs}});
+    if (idPairs.length != 0) return res.json({ status: 1, data: { idPairs } });
+    res.json({ status: 1, data: null });
   })
 );
 
