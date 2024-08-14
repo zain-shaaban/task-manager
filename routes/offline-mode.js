@@ -65,11 +65,12 @@ const router = express.Router();
  *                 items:
  *                   type: object
  *                   required:
- *                     - content
+ *                     - _id
  *                     - last_updated
- *                     - important
- *                     - completed
  *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       description: 
  *                     content:
  *                       type: string
  *                       description: Task content
@@ -83,7 +84,7 @@ const router = express.Router();
  *                       type: number
  *                       description: Task Status, its 0 by default
  *                   example:
- *                     id: 54b4fc22026424b198ce0bcc
+ *                     _id: 54b4fc22026424b198ce0bcc
  *                     content: go to the gym
  *                     last_updated: 123654981651
  *                     important: 1
@@ -108,10 +109,16 @@ const router = express.Router();
  *                   description: Response status ,always its 1
  *                 data:
  *                   type: null
- *                   description: Always data is null
- *               example:
- *                 status: 1
- *                 data: null
+ *                   description: data is null if the user dosen't add any task
+ *             examples:
+ *               without add tasks:
+ *                 value:
+ *                   status: 1
+ *                   data: null
+ *               with add tasks:
+ *                 value:
+ *                   status: 1
+ *                   data: {idPairs: [ {fakeID: 54b4fc22026424b198ce0bcc,realID: 66b4fc22026424b198ce0bdd}]}
  *       500:
  *         description: The token is invalid any more
  *         content:
@@ -136,16 +143,16 @@ router.route("/api/offline").post(
     const { deleteArray, updateArray, addArray } = req.body;
     for (let taskId of deleteArray) await Task.deleteOne({ _id: taskId });
     for (let task of updateArray) {
-      const { id, content, last_updated, important, completed } = task;
+      const { _id, content, last_updated, important, completed } = task;
       await Task.findByIdAndUpdate(
-        id,
+        _id,
         { content, last_updated, important, completed },
         { runValidators: true }
       );
     }
-    const arr = [];
+    const idPairs = [];
     for (let task of addArray) {
-      const { id, content, date, important, completed } = task;
+      const { _id, content, date, important, completed } = task;
       const newTask = await Task.create({
         content,
         date,
@@ -154,9 +161,9 @@ router.route("/api/offline").post(
         important,
         completed,
       });
-      arr.push([id, newTask._id]);
+      idPairs.push({fakeID:_id,realID:newTask._id});
     }
-    res.json({status:1,data:null});
+    res.json({status:1,data:{idPairs}});
   })
 );
 
