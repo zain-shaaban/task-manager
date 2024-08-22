@@ -147,7 +147,7 @@ router.route("/api/user/register").post(register);
  *                   type: string
  *                   description:  Explanation of the error
  *               example:
- *                 status: 1
+ *                 status: 0
  *                 message: Too many requests
  */
 
@@ -192,6 +192,22 @@ router.route("/api/user/login").post(loginLimiter(), login);
  *               example:
  *                 status: 1
  *                 data: {"token": eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
+ *       429:
+ *         description:  You have many wrong attempts and then you can try again after a few minutes.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   description: Response status ,always its 0
+ *                 message:
+ *                   type: string
+ *                   description:  Explanation of the error
+ *               example:
+ *                 status: 0
+ *                 message: Too many requests
  *       500:
  *         description: The confirmation key is wrong
  *         content:
@@ -208,22 +224,6 @@ router.route("/api/user/login").post(loginLimiter(), login);
  *               example:
  *                 status: 0
  *                 message: Wrong confirmation key
- *       429:
- *         description:  You have many wrong attempts and then you can try again after a few minutes.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                   description: Response status ,always its 0
- *                 message:
- *                   type: string
- *                   description:  Explanation of the error
- *               example:
- *                 status: 1
- *                 message: Too many requests
  */
 router.route("/api/user/confirm").patch(confirmLimiter(),confirmedUser);
 
