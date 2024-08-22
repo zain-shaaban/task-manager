@@ -1,4 +1,6 @@
 const express = require("express");
+const { loginLimiter ,confirmLimiter} = require("../MiddleWares/rateLimiter");
+const { Autherizarion } = require("../MiddleWares/auth");
 const {
   register,
   login,
@@ -6,8 +8,6 @@ const {
   confirmedUser,
   deleteuser,
 } = require("../controllers/user-controls");
-const { Autherizarion } = require("../MiddleWares/auth");
-
 const router = express.Router();
 
 /**
@@ -70,7 +70,7 @@ router.route("/api/user/register").post(register);
  * @swagger
  * /api/user/login:
  *   post:
- *     summary: Log in to the website
+ *     summary: Log in to the website , 
  *     tags: [User]
  *     requestBody:
  *       required: true
@@ -133,9 +133,25 @@ router.route("/api/user/register").post(register);
  *                 value:
  *                   status: 0
  *                   message: the email is unconfirmed
+ *       429:
+ *         description:  You have many wrong attempts and then you can try again after a few minutes.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   description: Response status ,always its 0
+ *                 message:
+ *                   type: string
+ *                   description:  Explanation of the error
+ *               example:
+ *                 status: 1
+ *                 message: Too many requests
  */
 
-router.route("/api/user/login").post(login);
+router.route("/api/user/login").post(loginLimiter(), login);
 
 /**
  * @swagger
@@ -149,13 +165,13 @@ router.route("/api/user/login").post(login);
  *         application/json:
  *           schema:
  *             required:
- *               - token
+ *               - confirm_key
  *             properties:
- *               token:
- *                 type: string
- *                 description: authentication token is existing on your Gmail after register
+ *               confirm_key:
+ *                 type: number
+ *                 description: Four digit number in your email
  *             example:
- *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
+ *               confirm_key: 1234
  *     responses:
  *       200:
  *         description: The account has confirmed successfully
@@ -177,7 +193,7 @@ router.route("/api/user/login").post(login);
  *                 status: 1
  *                 data: {"token": eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I}
  *       500:
- *         description: The authentication token is invalid
+ *         description: The confirmation key is wrong
  *         content:
  *           application/json:
  *             schema:
@@ -191,9 +207,25 @@ router.route("/api/user/login").post(login);
  *                   description: Explanation of the error
  *               example:
  *                 status: 0
- *                 message: invalid signature
+ *                 message: Wrong confirmation key
+ *       429:
+ *         description:  You have many wrong attempts and then you can try again after a few minutes.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   description: Response status ,always its 0
+ *                 message:
+ *                   type: string
+ *                   description:  Explanation of the error
+ *               example:
+ *                 status: 1
+ *                 message: Too many requests
  */
-router.route("/api/user/confirm").patch(confirmedUser);
+router.route("/api/user/confirm").patch(confirmLimiter(),confirmedUser);
 
 /**
  * @swagger

@@ -4,15 +4,16 @@ const Task = require("../models/task-model");
 const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const transporter = require("../MiddleWares/transporter");
-const CustomError = require("../utils/customeError");
+const ApiError = require("../utils/ApiError");
 
 const register = asyncWrapper(async (req, res) => {
   const { name, email, password } = req.body;
-  const newUser = await User.create({ name, email, password });
+  const confirm_key=Math.round(Math.random()*10e3)
+  const newUser = await User.create({ name, email, password,confirm_key });
   const token = jwt.sign({ UserId: newUser._id }, process.env.AUTH_SECRET, {
     expiresIn: "1d",
   });
-  transporter(email, token);
+  transporter(email, confirm_key);
   res.status(201).json({
     status: 1,
     data: null,
@@ -22,11 +23,11 @@ const register = asyncWrapper(async (req, res) => {
 const login = asyncWrapper(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user) throw new CustomError("email or password is incorrect", 500);
+  if (!user) throw new ApiError("email or password is incorrect", 500);
   if (!user.confirmed)
-    throw new CustomError("the email is unconfirmed", 500);
+    throw new ApiError("the email is unconfirmed", 500);
   if (!user.Auth(password))
-    throw new CustomError("email or password is incorrect", 500);
+    throw new ApiError("email or password is incorrect", 500);
   const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
     expiresIn: 1000 * 60 * 60 * 24 * 30,
   });
@@ -64,15 +65,18 @@ const updateUser = asyncWrapper(async (req, res) => {
 });
 
 const confirmedUser = asyncWrapper(async (req, res) => {
-  const { UserId } = jwt.verify(req.body.token, process.env.AUTH_SECRET);
-  await User.updateOne({ _id: UserId }, { confirmed: true });
-  const token = jwt.sign({ UserId }, process.env.JWT_SECRET, {
-    expiresIn: 1000 * 60 * 60 * 24 * 30,
-  });
-  res.status(200).json({
-    status: 1,
-    data: { token },
-  });
+  const {confirm_key}=req.body;
+  const user=await User.findOneAndUpdate({confirm_key},{confirmed:true,$unset: { confirm_key}});
+  if(user){
+    const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: 1000 * 60 * 60 * 24 * 30,
+    });
+    return res.status(200).json({
+      status: 1,
+      data: { token },
+    });
+  }
+  throw new ApiError("Wrong confirmation key")
 });
 
 const deleteuser = asyncWrapper(async (req, res) => {
@@ -84,7 +88,7 @@ const deleteuser = asyncWrapper(async (req, res) => {
     await Task.deleteOne({UserId})
     return res.status(202).json({status:1,data:null})
   }
-  throw new CustomError("wrong password",500)
+  throw new ApiError("wrong password",500)
 });
 module.exports = {
   register,

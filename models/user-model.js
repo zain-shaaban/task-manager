@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema({
   exp:{
     type:Number,
     default:-1
+  },
+  confirm_key:{
+    type:Number,
+    minLength:4,
+    maxLength:4
   }
 });
 

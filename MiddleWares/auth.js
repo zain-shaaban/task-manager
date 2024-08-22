@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const asyncWrapper=require("./asyncWrapper")
 const User=require("../models/user-model")
 require("dotenv").config();
-const costumeError=require("../utils/customeError")
+const ApiError=require("../utils/ApiError")
 
 const Autherizarion = asyncWrapper(async function (req, res, next) {
   const token = req.body.token;
@@ -15,7 +15,7 @@ const Autherizarion = asyncWrapper(async function (req, res, next) {
           await user.updateOne({exp:auth.exp})
       }}
       else
-        throw new costumeError("invalid token",400)
+        throw new ApiError("invalid token",400)
       req.UserId = auth.UserId;
       return next();
   }});

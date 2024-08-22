@@ -2,7 +2,7 @@ require("dotenv").config();
 const Task = require("../models/task-model");
 const User = require("../models/user-model");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
-const CustomError = require("../utils/customeError");
+const ApiError = require("../utils/ApiError");
 
 const getTasks = asyncWrapper(async (req, res) => {
   const tasks = await Task.find({ UserId: req.UserId },{__v:false}).sort({ date: "asc" });
@@ -21,7 +21,7 @@ const getTasks = asyncWrapper(async (req, res) => {
 
 const addtask = asyncWrapper(async (req, res) => {
   const { content, date, important, completed } = req.body;
-  if (!content) throw new CustomError("Content Is Required", 500);
+  if (!content) throw new ApiError("Content Is Required", 500);
   const newTask=await Task.create({
     content,
     date,
@@ -41,7 +41,7 @@ const deleteTask = asyncWrapper(async (req, res) => {
   for(let id of ids){
     const task=await Task.findByIdAndDelete(id);
     if(!task)
-      throw new CustomError(`this task id is not exist ${id}`,404)
+      throw new ApiError(`this task id is not exist ${id}`,404)
   }
   res.status(202).json({
     status:1,
@@ -62,7 +62,7 @@ const updatetask = asyncWrapper(async (req, res) => {
       status: 1,
       data: null,
     });
-  throw new CustomError("the task id is not exist", 404);
+  throw new ApiError("the task id is not exist", 404);
 });
 
 const deleteCompletedTasks = asyncWrapper(async (req, res) => {
