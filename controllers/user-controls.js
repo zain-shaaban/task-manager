@@ -5,13 +5,22 @@ const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const transporter = require("../MiddleWares/transporter");
 const ApiError = require("../utils/ApiError");
+const userValidators = require("../MiddleWares/userValidators");
 
 const register = asyncWrapper(async (req, res) => {
-  const { name, email, password } = req.body;
-  const confirm_key=Math.round(Math.random()*10e3)
-  const newUser = await User.create({ name, email, password,confirm_key });
-  const token = jwt.sign({ UserId: newUser._id }, process.env.AUTH_SECRET, {
-    expiresIn: "1d",
+  const {
+    value: { name, email, password },
+    error,
+  } = userValidators.registerValidate(req.body);
+  if (error) {
+    throw new ApiError(error.details[0].message);
+  }
+  const confirm_key = Math.round(Math.random() * 10e3);
+  await User.create({
+    name,
+    email,
+    password,
+    confirm_key,
   });
   transporter(email, confirm_key);
   res.status(201).json({
@@ -21,11 +30,16 @@ const register = asyncWrapper(async (req, res) => {
 });
 
 const login = asyncWrapper(async (req, res) => {
-  const { email, password } = req.body;
+  const {
+    value: { email, password },
+    error,
+  } = userValidators.loginValidate(req.body);
+  if (error) {
+    throw new ApiError(error.details[0].message);
+  }
   const user = await User.findOne({ email });
   if (!user) throw new ApiError("email or password is incorrect", 500);
-  if (!user.confirmed)
-    throw new ApiError("the email is unconfirmed", 500);
+  if (!user.confirmed) throw new ApiError("the email is unconfirmed", 500);
   if (!user.Auth(password))
     throw new ApiError("email or password is incorrect", 500);
   const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
@@ -38,7 +52,13 @@ const login = asyncWrapper(async (req, res) => {
 });
 
 const updateUser = asyncWrapper(async (req, res) => {
-  const { name, email, password, appearance, auto_delete } = req.body;
+  const {
+    value: { name, email, password, appearance, auto_delete },
+    error,
+  } = userValidators.updateUserValidate(req.body);
+  if (error) {
+    throw new ApiError(error.details[0].message);
+  }
   const user = await User.findOneAndUpdate(
     { _id: req.UserId },
     { name, email, password, appearance, auto_delete },
@@ -46,7 +66,7 @@ const updateUser = asyncWrapper(async (req, res) => {
   );
   if (password) {
     const token = jwt.sign(
-      { UserId: user._id,update:true},
+      { UserId: user._id, update: true },
       process.env.JWT_SECRET,
       {
         expiresIn: 1000 * 60 * 60 * 24 * 30,
@@ -65,9 +85,18 @@ const updateUser = asyncWrapper(async (req, res) => {
 });
 
 const confirmedUser = asyncWrapper(async (req, res) => {
-  const {confirm_key}=req.body;
-  const user=await User.findOneAndUpdate({confirm_key},{confirmed:true,$unset: { confirm_key}});
-  if(user){
+  const {
+    value: { confirm_key },
+    error,
+  } = userValidators.confirmUserValidate(req.body);
+  if (error) {
+    throw new ApiError(error.details[0].message);
+  }
+  const user = await User.findOneAndUpdate(
+    { confirm_key },
+    { confirmed: true, $unset: { confirm_key } }
+  );
+  if (user) {
     const token = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
       expiresIn: 1000 * 60 * 60 * 24 * 30,
     });
@@ -76,19 +105,27 @@ const confirmedUser = asyncWrapper(async (req, res) => {
       data: { token },
     });
   }
-  throw new ApiError("Wrong confirmation key")
+  throw new ApiError("Wrong confirmation key");
 });
 
 const deleteuser = asyncWrapper(async (req, res) => {
-  const UserId = req.UserId;
-  const password=req.body.password;
-  const user=await User.findOne({_id:UserId})
-  if(user.Auth(password)){
-    await User.deleteOne({_id:UserId})
-    await Task.deleteOne({UserId})
-    return res.status(202).json({status:1,data:null})
+  const {
+    value: { UserId, password },
+    error,
+  } = userValidators.deleteUserValidate({
+    UserId: req.UserId,
+    password: req.body.password,
+  });
+  if (error) {
+    throw new ApiError(error.details[0].message);
   }
-  throw new ApiError("wrong password",500)
+  const user = await User.findOne({ _id: UserId });
+  if (user.Auth(password)) {
+    await User.deleteOne({ _id: UserId });
+    await Task.deleteOne({ UserId });
+    return res.status(202).json({ status: 1, data: null });
+  }
+  throw new ApiError("wrong password", 500);
 });
 module.exports = {
   register,

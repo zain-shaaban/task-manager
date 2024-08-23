@@ -2,7 +2,8 @@ const express = require("express");
 const Task = require("../models/task-model");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const { Autherizarion } = require("../MiddleWares/auth");
-
+const OfflineValidator = require("../MiddleWares/offlineValidator");
+const ApiError = require("../utils/ApiError");
 const router = express.Router();
 
 /**
@@ -140,7 +141,13 @@ const router = express.Router();
 router.route("/api/offline").post(
   Autherizarion,
   asyncWrapper(async (req, res) => {
-    const { deleteArray, updateArray, addArray } = req.body;
+    const {
+      value: { addArray, updateArray, deleteArray },
+      error,
+    } = OfflineValidator.validate(req.body);
+    if(error){
+      throw new ApiError(error.details[0].message)
+    }
     for (let taskId of deleteArray) await Task.deleteOne({ _id: taskId });
     for (let task of updateArray) {
       const { _id, content, last_updated, important, completed } = task;
@@ -152,7 +159,7 @@ router.route("/api/offline").post(
     }
     const idPairs = [];
     for (let task of addArray) {
-      const { _id, content, date, important, completed } = task;
+      const { id, content, date, important, completed } = task;
       const newTask = await Task.create({
         content,
         date,
@@ -161,7 +168,7 @@ router.route("/api/offline").post(
         important,
         completed,
       });
-      idPairs.push({ fakeID: _id, realID: newTask._id });
+      idPairs.push({ fakeID: id, realID: newTask._id });
     }
     if (idPairs.length != 0) return res.json({ status: 1, data: { idPairs } });
     res.json({ status: 1, data: null });

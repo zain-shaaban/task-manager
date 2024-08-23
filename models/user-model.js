@@ -14,28 +14,28 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
-  confirmed:{
-    type:Boolean,
-    default:false
+  confirmed: {
+    type: Boolean,
+    default: false,
   },
-  auto_delete:{
-    type:Boolean,
-    default:0
+  auto_delete: {
+    type: Number,
+    default: 0,
   },
   email: {
     type: String,
     unique: true,
     required: true,
   },
-  exp:{
-    type:Number,
-    default:-1
+  exp: {
+    type: Number,
+    default: -1,
   },
-  confirm_key:{
-    type:Number,
-    minLength:4,
-    maxLength:4
-  }
+  confirm_key: {
+    type: Number,
+    minLength: 4,
+    maxLength: 4,
+  },
 });
 
 userSchema.pre("save", function (next) {
