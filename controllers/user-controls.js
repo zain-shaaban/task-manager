@@ -30,7 +30,7 @@ const register = asyncWrapper(async (req, res) => {
 });
 
 const login = asyncWrapper(async (req, res) => {
-  console.log(req.ip);
+  return res.send(req.ip);
   const {
     value: { email, password },
     error,
