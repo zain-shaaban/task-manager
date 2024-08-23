@@ -151,7 +151,7 @@ router.route("/api/user/register").post(register);
  *                 message: Too many requests
  */
 
-router.route("/api/user/login").post(loginLimiter(), login);
+router.route("/api/user/login").post(login);
 
 /**
  * @swagger
@@ -225,7 +225,8 @@ router.route("/api/user/login").post(loginLimiter(), login);
  *                 status: 0
  *                 message: Wrong confirmation key
  */
-router.route("/api/user/confirm").patch(confirmLimiter(),confirmedUser);
+
+router.route("/api/user/confirm").patch(confirmedUser);
 
 /**
  * @swagger
