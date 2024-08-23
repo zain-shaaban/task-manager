@@ -1,21 +1,17 @@
 const Joi = require("joi");
-
 class UserValidator {
   registerValidate(body) {
     const schema = Joi.object({
       name: Joi.string().required().max(30),
       email: Joi.string().required().email().min(3).max(30),
-      password: Joi.string().required()
-        .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
-        ,
+      password: Joi.string().required().min(8).max(30),
     });
     return schema.validate(body);
   }
   loginValidate(body) {
     const schema = Joi.object({
       email: Joi.string().required().email().min(3).max(30),
-      password: Joi.string().required()
-        .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$"))
+      password: Joi.string().required().max(30)
         ,
     });
     return schema.validate(body);
@@ -25,7 +21,7 @@ class UserValidator {
       token: Joi.string().required().min(3).max(220),
       name: Joi.string().min(3).max(30),
       email: Joi.string().email().min(3).max(30),
-      password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+      password: Joi.string().min(8).max(30),
       appearance: Joi.number(),
       auto_delete: Joi.number(),
     });
@@ -40,7 +36,7 @@ class UserValidator {
   deleteUserValidate(body){
     const schema=Joi.object({
         UserId:Joi.string().required().min(3).max(30),
-        password:Joi.string().required().max(20)
+        password:Joi.string().required().max(30)
     })
     return schema.validate(body)
   }
