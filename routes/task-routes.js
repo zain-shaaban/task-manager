@@ -22,6 +22,9 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *         - completed
  *         - last_updated
  *       properties:
+ *         _id:
+ *           type: string
+ *           description: The new task auto-generated id
  *         content:
  *           type: string
  *           description: Task content
@@ -38,10 +41,11 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *           type: number
  *           description: Last time the task was updated in milliseconds
  *       example:
+ *         _id: 66ba00d5abd21e68c7828071
  *         content: go to the gym
  *         date: 123654981651
  *         important: true
- *         completed: flase
+ *         completed: false
  *         last_updated: 12365986784
  *     User:
  *       type: object
