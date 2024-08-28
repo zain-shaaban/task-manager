@@ -8,24 +8,24 @@ const taskSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  UserId:{
-    type:String,
-    required:true
+  UserId: {
+    type: String,
+    required: true,
   },
-  important:{
-    type:Number,
-    required:true,
-    default:0
+  important: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
-  completed:{
-    type:Number,
-    required:true,
-    default:0
+  completed: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
-  last_updated:{
-    type:Number,
-    required:true
-  }
+  last_updated: {
+    type: Number,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Task", taskSchema);

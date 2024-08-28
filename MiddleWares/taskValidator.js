@@ -12,8 +12,8 @@ class TaskValidator {
         token: Joi.string().required().max(220),
         content: Joi.string().required().max(50),
         date: Joi.number().required(),
-        important:Joi.number().valid(0,1), 
-        completed:Joi.number().valid(0,1), 
+        important:Joi.boolean(), 
+        completed:Joi.boolean(), 
       });
       return schema.validate(body);
   }
@@ -30,8 +30,8 @@ class TaskValidator {
         id: Joi.string().required().max(30),
         content: Joi.string().max(50),
         last_updated: Joi.number().required(),
-        important:Joi.number().valid(0,1), 
-        completed:Joi.number().valid(0,1), 
+        important:Joi.boolean(), 
+        completed:Joi.boolean(), 
     })
     return schema.validate(body)
   }

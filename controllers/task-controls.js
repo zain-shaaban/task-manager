@@ -10,7 +10,7 @@ const getTasks = asyncWrapper(async (req, res) => {
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const tasks = await Task.find({ UserId: req.UserId }, { __v: false }).sort({
+  const tasks = await Task.find({ UserId: req.UserId }, { __v: false,UserId:false }).sort({
     date: "asc",
   });
   const user = await User.findById(req.UserId);

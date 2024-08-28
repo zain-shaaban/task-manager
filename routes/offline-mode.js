@@ -49,17 +49,17 @@ const router = express.Router();
  *                       type: number
  *                       description: Task creation date in milliseconds
  *                     important:
- *                       type: number
- *                       description: The importance of the task, its 0 by default
+ *                       type: boolean
+ *                       description: The importance of the task, its false by default
  *                     completed:
- *                       type: number
- *                       description: Task Status, its 0 by default
+ *                       type: boolean
+ *                       description: Task Status, its false by default
  *                   example:
  *                     id: 66b4fc22026424b198ce0bdd
  *                     content: go to the gym
  *                     date: 123654981651
- *                     important: 1
- *                     completed: 0
+ *                     important: true
+ *                     completed: false
  *               updateArray:
  *                 type: array
  *                 description: The task group you want to change
@@ -79,17 +79,17 @@ const router = express.Router();
  *                       type: number
  *                       description: Last time the task was updated in milliseconds
  *                     important:
- *                       type: number
- *                       description: The importance of the task, its 0 by default
+ *                       type: boolean
+ *                       description: The importance of the task, its false by default
  *                     completed:
- *                       type: number
- *                       description: Task Status, its 0 by default
+ *                       type: boolean
+ *                       description: Task Status, its false by default
  *                   example:
  *                     _id: 54b4fc22026424b198ce0bcc
  *                     content: go to the gym
  *                     last_updated: 123654981651
- *                     important: 1
- *                     completed: 0
+ *                     important: true
+ *                     completed: false
  *               deleteArray:
  *                 type: array
  *                 items:

@@ -9,8 +9,8 @@ class OfflineValidator {
           _id: Joi.string().required().max(30),
           content: Joi.string().max(50),
           last_updated: Joi.number().required(),
-          important:Joi.number().valid(0,1), 
-          completed:Joi.number().valid(0,1), 
+          important:Joi.boolean(), 
+          completed:Joi.boolean(), 
         })
       ),
       addArray: Joi.array().items(
@@ -18,8 +18,8 @@ class OfflineValidator {
           id: Joi.string().max(30),
           content: Joi.string().max(50),
           date: Joi.number(),
-          important:Joi.number().valid(0,1), 
-          completed:Joi.number().valid(0,1),
+          important:Joi.boolean(), 
+          completed:Joi.boolean(),
         })
       ).required(),
     });

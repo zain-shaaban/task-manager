@@ -29,19 +29,19 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *           type: number
  *           description: Task creation date in milliseconds
  *         important:
- *           type: number
- *           description: The importance of the task, its 0 by default
+ *           type: boolean
+ *           description: The importance of the task, its false by default
  *         completed:
- *           type: number
- *           description: Task Status, its 0 by default
+ *           type: boolean
+ *           description: Task Status, its false by default
  *         last_updated:
  *           type: number
  *           description: Last time the task was updated in milliseconds
  *       example:
  *         content: go to the gym
  *         date: 123654981651
- *         important: 1
- *         completed: 0
+ *         important: true
+ *         completed: flase
  *         last_updated: 12365986784
  *     User:
  *       type: object
@@ -177,17 +177,17 @@ router.route("/api/tasks").post(Autherizarion, getTasks);
  *                 type: number
  *                 description: Task creation date in milliseconds
  *               important:
- *                 type: number
- *                 description: The importance of the task, its 0 by default
+ *                 type: boolean
+ *                 description: The importance of the task, its false by default
  *               completed:
- *                 type: number
- *                 description: Task Status, its 0 by default
+ *                 type: boolean
+ *                 description: Task Status, its false by default
  *             example:
  *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               content: go to the gym
  *               date: 123654981651
- *               important: 1
- *               completed: 0
+ *               important: true
+ *               completed: false
  *     responses:
  *       201:
  *         description: The new task has added successfully
@@ -340,17 +340,17 @@ router.route("/api/tasks/delete").delete(Autherizarion, deleteTask);
  *                 type: number
  *                 description: Last time the task was updated in milliseconds
  *               important:
- *                 type: number
- *                 description: The importance of the task, its 0 by default
+ *                 type: boolean
+ *                 description: The importance of the task, its false by default
  *               completed:
- *                 type: number
- *                 description: Task Status, its 0 by default
+ *                 type: boolean
+ *                 description: Task Status, its false by default
  *             example:
  *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               content: go to the gym
  *               last_updated: 123654981651
- *               important: 1
- *               completed: 0
+ *               important: true
+ *               completed: false
  *     responses:
  *       203:
  *         description:  The task has updated successfully

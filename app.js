@@ -5,7 +5,7 @@ const swaggerDOC = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const cors = require("cors");
 const helmet = require("helmet");
-const { normalLimiter } = require("./MiddleWares/rateLimiter");
+const limiter = require("./MiddleWares/rateLimiter");
 const errorHandler = require("./MiddleWares/errorHandler");
 const notFound = require("./MiddleWares/404");
 
@@ -20,7 +20,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(normalLimiter());
+app.use(limiter());
 const options = {
   definition: {
     openapi: "3.0.0",
