@@ -15,7 +15,7 @@ class OfflineValidator {
       ),
       addArray: Joi.array().items(
         Joi.object({
-          id: Joi.string().max(30),
+          _id: Joi.string().max(30),
           content: Joi.string().max(50),
           date: Joi.number(),
           important:Joi.boolean(), 

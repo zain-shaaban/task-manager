@@ -39,7 +39,7 @@ const router = express.Router();
  *                     - important
  *                     - completed
  *                   properties:
- *                     id:
+ *                     _id:
  *                       type: string
  *                       description: temporary id
  *                     content:
@@ -55,7 +55,7 @@ const router = express.Router();
  *                       type: boolean
  *                       description: Task Status, its false by default
  *                   example:
- *                     id: 66b4fc22026424b198ce0bdd
+ *                     _id: 66b4fc22026424b198ce0bdd
  *                     content: go to the gym
  *                     date: 123654981651
  *                     important: true
@@ -159,7 +159,7 @@ router.route("/api/offline").post(
     }
     const idPairs = [];
     for (let task of addArray) {
-      const { id, content, date, important, completed } = task;
+      const { _id, content, date, important, completed } = task;
       const newTask = await Task.create({
         content,
         date,
@@ -168,7 +168,7 @@ router.route("/api/offline").post(
         important,
         completed,
       });
-      idPairs.push({ fakeID: id, realID: newTask._id });
+      idPairs.push({ fakeID: _id, realID: newTask._id });
     }
     if (idPairs.length != 0) return res.json({ status: 1, data: { idPairs } });
     res.json({ status: 1, data: null });
