@@ -4,8 +4,8 @@ const ApiError = require("../utils/ApiError");
 const limiter =function(){
 
       return rateLimit({
-      windowMs: 15 * 60 * 1000,
-      limit: 300,
+      windowMs: 1 * 60 * 1000,
+      limit: 500,
       standardHeaders: "draft-7",
       legacyHeaders: false,
       handler: () => {

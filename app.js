@@ -1,51 +1,12 @@
-require("dotenv").config();
+const connectDB = require("./services/DataBase");
+const App = require("./services/ExpressApp");
 const express = require("express");
-const mongoose = require("mongoose");
-const swaggerDOC = require("swagger-jsdoc");
-const swaggerUI = require("swagger-ui-express");
-const cors = require("cors");
-const helmet = require("helmet");
-const limiter = require("./MiddleWares/rateLimiter");
-const errorHandler = require("./MiddleWares/errorHandler");
-const notFound = require("./MiddleWares/404");
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected Successfully..."))
-  .catch((err) => console.log(err));
 const app = express();
 
-
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(limiter());
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Task Manager Documentation",
-      version: "1.0.0",
-      description: "Simple task manager api built by Express.js",
-    },
-    servers: [
-      {
-        url: "https://task-manager-back-end-7gbe.onrender.com",
-      },
-    ],
-  },
-  apis: ["./routes/*.js"],
+const startServer = async () => {
+  await connectDB();
+  await App(app);
 };
-const swaggerConfig = swaggerDOC(options);
 
-app.use("/", require("./routes/task-routes"));
-app.use("/", require("./routes/user-routes"));
-app.use("/", require("./routes/offline-mode"));
-
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerConfig));
-app.use("*", notFound);
-app.use(errorHandler);
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => console.log(`Server Listining On Port ${PORT}`));
+startServer();
