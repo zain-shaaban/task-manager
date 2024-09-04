@@ -29,7 +29,7 @@ module.exports = async (app) => {
         },
       ],
     },
-    apis: ["../routes/*.js"],
+    apis: ["./routes/*.js"],
   };
   const swaggerConfig = swaggerDOC(options);
 
