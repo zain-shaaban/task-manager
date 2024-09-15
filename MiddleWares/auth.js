@@ -5,7 +5,7 @@ require("dotenv").config();
 const ApiError=require("../utils/ApiError")
 
 const Autherizarion = asyncWrapper(async function (req, res, next) {
-  const token = req.body.token;
+  const token = req.get("Authorization").split(" ")[1];
     const auth = jwt.verify(token, process.env.JWT_SECRET);
     if (auth) {
       const user=await User.findById(auth.UserId);

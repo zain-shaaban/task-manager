@@ -6,10 +6,6 @@ const ApiError = require("../utils/ApiError");
 const taskValidator = require("../MiddleWares/taskValidator");
 
 const getTasks = asyncWrapper(async (req, res) => {
-  const { error } = taskValidator.getTasksValidate(req.body);
-  if (error) {
-    throw new ApiError(error.details[0].message);
-  }
   const tasks = await Task.find({ UserId: req.UserId }, { __v: false,UserId:false }).sort({
     date: "asc",
   });

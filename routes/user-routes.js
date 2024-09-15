@@ -1,5 +1,5 @@
 const express = require("express");
-const { loginLimiter ,confirmLimiter} = require("../MiddleWares/rateLimiter");
+const { loginLimiter, confirmLimiter } = require("../MiddleWares/rateLimiter");
 const { Autherizarion } = require("../MiddleWares/auth");
 const {
   register,
@@ -70,7 +70,7 @@ router.route("/api/user/register").post(register);
  * @swagger
  * /api/user/login:
  *   post:
- *     summary: Log in to the website , 
+ *     summary: Log in to the website ,
  *     tags: [User]
  *     requestBody:
  *       required: true
@@ -241,11 +241,7 @@ router.route("/api/user/confirm").patch(confirmedUser);
  *           schema:
  *             type: object
  *             required:
- *               - token
  *             properties:
- *               token:
- *                 type: string
- *                 description: Access token to have the ability to make changes
  *               email:
  *                 type: string
  *                 description: Email of the account
@@ -259,7 +255,6 @@ router.route("/api/user/confirm").patch(confirmedUser);
  *                 type: number
  *                 description: Option to delete completed tasks directly, its 0 by default
  *             example:
- *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               email: test@gmail.com
  *               password: test123
  *               apperance: 3

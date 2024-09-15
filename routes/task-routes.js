@@ -80,23 +80,9 @@ const { Autherizarion } = require("../MiddleWares/auth");
 /**
  * @swagger
  * /api/tasks:
- *   post:
+ *   get:
  *     summary: Returns all user tasks
  *     tags: [Task]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - token
- *             properties:
- *               token:
- *                 type: string
- *                 description: Access token to authenticate the user
- *             example:
- *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *     responses:
  *       200:
  *         description: Data returned successfully
@@ -149,7 +135,7 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *                 status: 0
  *                 message: invalid token
  */
-router.route("/api/tasks").post(Autherizarion, getTasks);
+router.route("/api/tasks").get(Autherizarion, getTasks);
 
 
 /**
@@ -165,15 +151,11 @@ router.route("/api/tasks").post(Autherizarion, getTasks);
  *           schema:
  *             type: object
  *             required:
- *               - token
  *               - content
  *               - date
  *               - important
  *               - completed
  *             properties:
- *               token:
- *                 type: string
- *                 description: Access token to authenticate the user
  *               content:
  *                 type: string
  *                 description: Task content
@@ -187,7 +169,6 @@ router.route("/api/tasks").post(Autherizarion, getTasks);
  *                 type: boolean
  *                 description: Task Status, its false by default
  *             example:
- *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               content: go to the gym
  *               date: 123654981651
  *               important: true
@@ -244,19 +225,14 @@ router.route("/api/tasks/add").post(Autherizarion, addtask);
  *           schema:
  *             type: object
  *             required:
- *               - token
  *               - ids
  *             properties:
- *               token:
- *                 type: string
- *                 description: Access token to authenticate the user
  *               ids:
  *                 type: array
  *                 items:
  *                   type: string
  *                 description: Matrix of each task ID that you want to delete, one or more
  *             example:
- *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               ids: ["66ba00d5abd21e68c7822895" , "66ba00d5abd21e68c7825431"]
  *     responses:
  *       202:
@@ -331,12 +307,8 @@ router.route("/api/tasks/delete").delete(Autherizarion, deleteTask);
  *           schema:
  *             type: object
  *             required:
- *               - token
  *               - last_updated
  *             properties:
- *               token:
- *                 type: string
- *                 description: Access token to authenticate the user
  *               content:
  *                 type: string
  *                 description: Task content
@@ -350,7 +322,6 @@ router.route("/api/tasks/delete").delete(Autherizarion, deleteTask);
  *                 type: boolean
  *                 description: Task Status, its false by default
  *             example:
- *               token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               content: go to the gym
  *               last_updated: 123654981651
  *               important: true

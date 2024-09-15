@@ -19,15 +19,10 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
- *               - token
  *               - addArray
  *               - updateArray
  *               - deleteArray
  *             properties:
- *               token:
- *                 type: string
- *                 description: Access token to authenticate the user
- *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *               addArray:
  *                 type: array
  *                 description: The task group you want to add
