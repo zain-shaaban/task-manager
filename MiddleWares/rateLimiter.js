@@ -5,7 +5,7 @@ const limiter =function(){
 
       return rateLimit({
       windowMs: 1 * 60 * 1000,
-      limit: 500,
+      limit: 300,
       standardHeaders: "draft-7",
       legacyHeaders: false,
       handler: () => {
