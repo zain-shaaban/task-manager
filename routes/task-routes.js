@@ -83,6 +83,12 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *   get:
  *     summary: Returns all user tasks
  *     tags: [Task]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *     responses:
  *       200:
  *         description: Data returned successfully
@@ -144,6 +150,12 @@ router.route("/api/tasks").get(Autherizarion, getTasks);
  *   post:
  *     summary: Add new task
  *     tags: [Task]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *     requestBody:
  *       required: true
  *       content:
@@ -218,6 +230,12 @@ router.route("/api/tasks/add").post(Autherizarion, addtask);
  *   delete:
  *     summary: Delete one task or more
  *     tags: [Task]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *     requestBody:
  *       required: true
  *       content:
@@ -300,6 +318,11 @@ router.route("/api/tasks/delete").delete(Autherizarion, deleteTask);
  *         required: true
  *         description: The task id
  *         example: 66ba00d5abd21e68c7822895
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *     requestBody:
  *       required: true
  *       content:

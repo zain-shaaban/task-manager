@@ -6,19 +6,13 @@ const ApiError = require("../utils/ApiError");
 const taskValidator = require("../MiddleWares/taskValidator");
 
 const getTasks = asyncWrapper(async (req, res) => {
-  const tasks = await Task.find({ UserId: req.UserId }, { __v: false,UserId:false }).sort({
-    date: "asc",
+  const user = await User.findById(req.UserId).populate({
+    path: "tasks",
+    options: { sort: { date: "asc" } },
   });
-  const user = await User.findById(req.UserId);
   res.status(200).json({
     status: 1,
-    data: {
-      tasks,
-      name: user.name,
-      appearance: user.appearance,
-      email: user.email,
-      auto_delete: user.auto_delete,
-    },
+    data: user,
   });
 });
 
@@ -30,14 +24,17 @@ const addtask = asyncWrapper(async (req, res) => {
   if (error) {
     throw new ApiError(error.details[0].message);
   }
+  const user = await User.findById(req.UserId);
   const newTask = await Task.create({
     content,
     date,
     last_updated: date,
-    UserId: req.UserId,
+    user,
     important,
     completed,
   });
+  user.tasks.push(newTask);
+  await user.save();
   res.status(201).json({
     status: 1,
     data: { id: newTask._id },
@@ -52,9 +49,13 @@ const deleteTask = asyncWrapper(async (req, res) => {
   if (error) {
     throw new ApiError(error.details[0].message);
   }
+  const user = await User.findById(req.UserId);
   for (let id of ids) {
     const task = await Task.findByIdAndDelete(id);
     if (!task) throw new ApiError(`this task id is not exist ${id}`, 404);
+    const index = user.tasks.indexOf(id);
+    user.tasks.splice(index, 1);
+    await user.save();
   }
   res.status(202).json({
     status: 1,
@@ -64,7 +65,7 @@ const deleteTask = asyncWrapper(async (req, res) => {
 
 const updatetask = asyncWrapper(async (req, res) => {
   const {
-    value: { id,content, last_updated, important, completed },
+    value: { id, content, last_updated, important, completed },
     error,
   } = taskValidator.updateTaskValidate({ id: req.params.id, ...req.body });
   if (error) {

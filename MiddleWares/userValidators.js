@@ -21,13 +21,13 @@ class UserValidator {
       email: Joi.string().email().min(3).max(30),
       password: Joi.string().min(8).max(30),
       appearance: Joi.number(),
-      auto_delete: Joi.number(),
+      auto_delete: Joi.boolean(),
     });
     return schema.validate(body);
   }
   confirmUserValidate(body) {
     const schema = Joi.object({
-      confirm_key: Joi.number().required().min(1000).max(9999),
+      confirm_key: Joi.number().required().min(100000).max(999999),
     });
     return schema.validate(body);
   }

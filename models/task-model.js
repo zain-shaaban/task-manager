@@ -8,9 +8,9 @@ const taskSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  UserId: {
-    type: String,
-    required: true,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:"User"
   },
   important: {
     type: Boolean,
@@ -26,6 +26,11 @@ const taskSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-});
+},{toJSON:{
+  transform(doc,ret){
+    delete ret.__v;
+    delete ret.user;
+  }
+}});
 
 module.exports = mongoose.model("Task", taskSchema);

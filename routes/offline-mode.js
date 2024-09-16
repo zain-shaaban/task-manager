@@ -1,5 +1,6 @@
 const express = require("express");
 const Task = require("../models/task-model");
+const User = require("../models/user-model");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const { Autherizarion } = require("../MiddleWares/auth");
 const OfflineValidator = require("../MiddleWares/offlineValidator");
@@ -12,6 +13,12 @@ const router = express.Router();
  *   post:
  *     summary: Apply all changes on tasks when the user is offline
  *     tags: [Task]
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *           example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2NmIzZTFjMDQ5M2E0ZTkxNmFmYzdlZjQiLCJpYXQiOjE3MjM0ODY5NjUsImV4cCI6NDMxNTQ4Njk2NX0.-HhVZgYJZmZZSfBfm9RlKp1W_X58wOUm02cT_lQeN-I
  *     requestBody:
  *       required: true
  *       content:
@@ -140,10 +147,16 @@ router.route("/api/offline").post(
       value: { addArray, updateArray, deleteArray },
       error,
     } = OfflineValidator.validate(req.body);
-    if(error){
-      throw new ApiError(error.details[0].message)
+    if (error) {
+      throw new ApiError(error.details[0].message);
     }
-    for (let taskId of deleteArray) await Task.deleteOne({ _id: taskId });
+    const user = await User.findById(req.UserId);
+    for (let taskId of deleteArray) {
+      const task = await Task.findByIdAndDelete({ _id: taskId });
+      const index = user.tasks.indexOf(task);
+      user.tasks.splice(index, 1);
+      await user.save();
+    }
     for (let task of updateArray) {
       const { _id, content, last_updated, important, completed } = task;
       await Task.findByIdAndUpdate(
@@ -163,6 +176,8 @@ router.route("/api/offline").post(
         important,
         completed,
       });
+      user.tasks.push(newTask);
+      await user.save();
       idPairs.push({ fakeID: _id, realID: newTask._id });
     }
     if (idPairs.length != 0) return res.json({ status: 1, data: { idPairs } });
