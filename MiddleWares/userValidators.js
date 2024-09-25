@@ -27,7 +27,7 @@ class UserValidator {
   }
   confirmUserValidate(body) {
     const schema = Joi.object({
-      confirm_key: Joi.number().required().min(100000).max(999999),
+      confirm_key: Joi.string().required().length(6),
     });
     return schema.validate(body);
   }

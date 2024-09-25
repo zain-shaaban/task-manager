@@ -170,8 +170,8 @@ router.route("/api/user/login").post(login);
  *               - confirm_key
  *             properties:
  *               confirm_key:
- *                 type: number
- *                 description: Four digit number in your email
+ *                 type: string
+ *                 description: Six digit number in your email
  *             example:
  *               confirm_key: 123456
  *     responses:

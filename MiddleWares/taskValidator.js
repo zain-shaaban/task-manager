@@ -3,7 +3,7 @@ const Joi = require("joi");
 class TaskValidator {
   addTaskValidate(body) {
     const schema = Joi.object({
-      content: Joi.string().required().max(50),
+      content: Joi.string().required().max(500),
       date: Joi.number().required(),
       important: Joi.boolean(),
       completed: Joi.boolean(),
