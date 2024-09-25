@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
       default: -1,
     },
     otp: {
-      type: Number,
+      type: String,
       minLength: 6,
       maxLength: 6,
     },

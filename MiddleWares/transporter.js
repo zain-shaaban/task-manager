@@ -3,7 +3,11 @@ require("dotenv").config();
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 
 const GenerateOTP = () => {
-  const otp = Math.floor(10000 + Math.random() * 900000);
+  var digits = '0123456789';
+    let otp = '';
+    for (let i = 0; i < 6; i++ ) {
+        otp += digits[Math.floor(Math.random() * 10)];
+    }
   const otpExpiry = Date.now() + 1000 * 60 * 5;
   return { otp, otpExpiry };
 };
