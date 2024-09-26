@@ -62,10 +62,6 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("save", function (next) {
-  this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync());
-  next();
-});
 
 userSchema.pre("findOneAndUpdate", function (next) {
   if (this._update.password)

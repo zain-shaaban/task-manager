@@ -5,7 +5,6 @@ const {
   addtask,
   deleteTask,
   updatetask,
-  deleteCompletedTasks
 } = require("../controllers/task-controls");
 const { Autherizarion } = require("../MiddleWares/auth");
 
@@ -400,6 +399,5 @@ router.route("/api/tasks/delete").delete(Autherizarion, deleteTask);
  *                 message: invalid token
  */
 router.route("/api/tasks/update/:id").patch(Autherizarion, updatetask);
-router.route("/api/tasks/deletecomplete").delete(deleteCompletedTasks);
 
 module.exports = router;

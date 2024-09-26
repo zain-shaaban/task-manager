@@ -6,6 +6,7 @@ const ApiError = require("../utils/ApiError");
 const taskValidator = require("../MiddleWares/taskValidator");
 
 const getTasks = asyncWrapper(async (req, res) => {
+  await deleteCompletedTasks();
   const user = await User.findById(req.UserId).populate({
     path: "tasks",
     options: { sort: { date: "asc" } },
@@ -84,18 +85,16 @@ const updatetask = asyncWrapper(async (req, res) => {
   throw new ApiError("the task id is not exist", 404);
 });
 
-const deleteCompletedTasks = asyncWrapper(async (req, res) => {
+const deleteCompletedTasks = async () => {
   await Task.deleteMany({
-    completed: 1,
+    completed: true,
     date: { $lt: Date.now() - 1000 * 60 * 60 * 24 * 7 },
   });
-  res.send("Delete");
-});
+};
 
 module.exports = {
   getTasks,
   addtask,
   deleteTask,
   updatetask,
-  deleteCompletedTasks,
 };

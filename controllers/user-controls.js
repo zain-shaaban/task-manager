@@ -3,31 +3,33 @@ const User = require("../models/user-model");
 const Task = require("../models/task-model");
 const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
-const {GenerateOTP,SendOTP} = require("../MiddleWares/transporter");
+const { GenerateOTP, SendOTP } = require("../MiddleWares/transporter");
 const ApiError = require("../utils/ApiError");
 const userValidators = require("../MiddleWares/userValidators");
+const bcrypt = require("bcryptjs");
 
 const register = asyncWrapper(async (req, res) => {
-  const {
+  let {
     value: { name, email, password },
     error,
   } = userValidators.registerValidate(req.body);
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const {otp,otpExpiry}=GenerateOTP();
-    await User.create({
+  password = bcrypt.hashSync(password, bcrypt.genSaltSync());
+  const { otp, otpExpiry } = GenerateOTP();
+  await User.create({
     name,
     email,
     password,
     otp,
-    otpExpiry
+    otpExpiry,
   });
-  const verifyUserToken=jwt.sign({email},process.env.VERIFY_SECRET);
+  const verifyUserToken = jwt.sign({ email }, process.env.VERIFY_SECRET);
   SendOTP(email, otp);
   res.status(201).json({
     status: 1,
-    data: {verifyUserToken},
+    data: { verifyUserToken },
   });
 });
 
@@ -42,11 +44,12 @@ const login = asyncWrapper(async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) throw new ApiError("email or password is incorrect", 500);
   if (!user.confirmed) {
-    const {otp,otpExpiry}=GenerateOTP();
-    await user.updateOne({otp,otpExpiry})
-    SendOTP(email,otp)
-    const verifyUserToken=jwt.sign({email},process.env.VERIFY_SECRET)
-    throw new ApiError("the email is unconfirmed", 500,verifyUserToken);}
+    const { otp, otpExpiry } = GenerateOTP();
+    await user.updateOne({ otp, otpExpiry });
+    SendOTP(email, otp);
+    const verifyUserToken = jwt.sign({ email }, process.env.VERIFY_SECRET);
+    throw new ApiError("the email is unconfirmed", 500, verifyUserToken);
+  }
   if (!user.Auth(password))
     throw new ApiError("email or password is incorrect", 500);
   const authToken = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
@@ -93,17 +96,17 @@ const updateUser = asyncWrapper(async (req, res) => {
 
 const confirmedUser = asyncWrapper(async (req, res) => {
   const {
-    value: { confirm_key:otp },
+    value: { confirm_key: otp },
     error,
   } = userValidators.confirmUserValidate(req.body);
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const token=req.get("verifyUserToken").split(" ")[1];
-  const email=jwt.verify(token,process.env.VERIFY_SECRET).email;
+  const token = req.get("verifyUserToken").split(" ")[1];
+  const email = jwt.verify(token, process.env.VERIFY_SECRET).email;
   const user = await User.findOneAndUpdate(
-    { email,otp,otpExpiry:{$gt:Date.now()} },
-    { confirmed: true, $unset: { otp:"" },$unset: { otpExpiry:""} }
+    { email, otp, otpExpiry: { $gt: Date.now() } },
+    { confirmed: true, $unset: { otp: "", otpExpiry: "" } }
   );
   if (user) {
     const authToken = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
@@ -137,25 +140,25 @@ const deleteuser = asyncWrapper(async (req, res) => {
   throw new ApiError("wrong password", 500);
 });
 
-const resendOTP=asyncWrapper(async(req,res)=>{
-  const token=req.get("verifyUserToken").split(" ")[1];
-  const email=jwt.verify(token,process.env.VERIFY_SECRET).email;
-  if(email){
-    const {otp,otpExpiry}=GenerateOTP();
-    await User.updateOne({email},{otp,otpExpiry});
-    SendOTP(email,otp);
+const resendOTP = asyncWrapper(async (req, res) => {
+  const token = req.get("verifyUserToken").split(" ")[1];
+  const email = jwt.verify(token, process.env.VERIFY_SECRET).email;
+  if (email) {
+    const { otp, otpExpiry } = GenerateOTP();
+    await User.updateOne({ email }, { otp, otpExpiry });
+    SendOTP(email, otp);
     return res.json({
-      status:1,
-      data:null
-    })
+      status: 1,
+      data: null,
+    });
   }
-  throw new ApiError("invalid token",500)
-})
+  throw new ApiError("invalid token", 500);
+});
 module.exports = {
   register,
   login,
   updateUser,
   confirmedUser,
   deleteuser,
-  resendOTP
+  resendOTP,
 };
