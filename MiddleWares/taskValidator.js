@@ -12,7 +12,7 @@ class TaskValidator {
   }
   deleteTasksValidate(body) {
     const schema = Joi.object({
-      ids: Joi.array().items(Joi.string()),
+      ids: Joi.array().items(Joi.number()),
     });
     return schema.validate(body);
   }

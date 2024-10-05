@@ -1,9 +1,8 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
+const sequelize=require("../utils/DBoptions")
 
 module.exports = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await sequelize.authenticate()
     console.log("DB Connected Successfully...");
   } catch (error) {
     console.error(error.message);

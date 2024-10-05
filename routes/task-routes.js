@@ -21,8 +21,8 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *         - completed
  *         - last_updated
  *       properties:
- *         _id:
- *           type: string
+ *         taskId:
+ *           type: number
  *           description: The new task auto-generated id
  *         content:
  *           type: string
@@ -40,10 +40,10 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *           type: number
  *           description: Last time the task was updated in milliseconds
  *       example:
- *         _id: 66ba00d5abd21e68c7828071
+ *         taskId: 20
  *         content: go to the gym
  *         date: 123654981651
- *         important: true
+ *         important: false
  *         completed: false
  *         last_updated: 12365986784
  *     User:
@@ -51,7 +51,7 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *       required:
  *         - email
  *         - password
- *         - name
+ *         - username
  *       properties:
  *         email:
  *           type: string
@@ -65,7 +65,7 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *       example:
  *         email: test@gmail.com
  *         password: test123
- *         name: test test
+ *         username: test test
  * */
 
 /**
@@ -103,26 +103,26 @@ const { Autherizarion } = require("../MiddleWares/auth");
  *                 data:
  *                   type: object
  *                   properties:
- *                     tasks:
- *                       type: array
- *                       items:
- *                         $ref: "#/components/schemas/Task"
- *                     name:
+ *                     username:
  *                       type: string
  *                       description: User name
  *                       example: test test
- *                     apperance:
+ *                     appearance:
  *                       type: number
- *                       description:  Apperance status
+ *                       description:  Appearance status
  *                       example: 3
  *                     email:
  *                       type: string
  *                       description: User email
  *                       example: test@gmail.com
  *                     auto_delete:
- *                       type: number
+ *                       type: boolean
  *                       description: Option to delete completed tasks directly
- *                       example: 1
+ *                       example: false
+ *                     tasks:
+ *                       type: array
+ *                       items:
+ *                         $ref: "#/components/schemas/Task"
  *       500:
  *         description: The token is invalid any more
  *         content:
@@ -198,12 +198,12 @@ router.route("/api/tasks").get(Autherizarion, getTasks);
  *                 data:
  *                   type: object
  *                   properties:
- *                     id:
- *                       type: string
+ *                     taskId:
+ *                       type: number
  *                       description: The new task auto-generated id
  *               example:
  *                 status: 1
- *                 data: {"id": 66ba00d5abd21e68c7828071}
+ *                 data: {"taskId": 20}
  *       500:
  *         description: The token is invalid any more
  *         content:
@@ -247,10 +247,10 @@ router.route("/api/tasks/add").post(Autherizarion, addtask);
  *               ids:
  *                 type: array
  *                 items:
- *                   type: string
+ *                   type: number
  *                 description: Matrix of each task ID that you want to delete, one or more
  *             example:
- *               ids: ["66ba00d5abd21e68c7822895" , "66ba00d5abd21e68c7825431"]
+ *               ids: [10 , 20 ,22]
  *     responses:
  *       202:
  *         description: The tasks have deleted successfully
@@ -268,22 +268,6 @@ router.route("/api/tasks/add").post(Autherizarion, addtask);
  *               example:
  *                 status: 1
  *                 data: null
- *       404:
- *         description: One or more of these tasks id is not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                   description: Response status ,always its 0
- *                 message:
- *                   type: string
- *                   description: Returned this task id is not exist {id}
- *               example:
- *                 status: 0
- *                 message: this task id is not exist 66ba00d5abd21e68c7825431
  *       500:
  *         description: The token is invalid any more
  *         content:
@@ -313,10 +297,10 @@ router.route("/api/tasks/delete").delete(Autherizarion, deleteTask);
  *       - in: path
  *         name: id
  *         schema:
- *           type: string
+ *           type: number
  *         required: true
  *         description: The task id
- *         example: 66ba00d5abd21e68c7822895
+ *         example: 22
  *       - in: header
  *         name: Authorization
  *         schema:

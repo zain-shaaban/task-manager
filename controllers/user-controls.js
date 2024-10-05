@@ -1,25 +1,24 @@
 require("dotenv").config();
 const User = require("../models/user-model");
-const Task = require("../models/task-model");
 const jwt = require("jsonwebtoken");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const { GenerateOTP, SendOTP } = require("../MiddleWares/transporter");
 const ApiError = require("../utils/ApiError");
 const userValidators = require("../MiddleWares/userValidators");
 const bcrypt = require("bcryptjs");
+const { Op} = require("sequelize");
 
 const register = asyncWrapper(async (req, res) => {
   let {
-    value: { name, email, password },
+    value: { username, email, password },
     error,
   } = userValidators.registerValidate(req.body);
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  password = bcrypt.hashSync(password, bcrypt.genSaltSync());
   const { otp, otpExpiry } = GenerateOTP();
   await User.create({
-    name,
+    username,
     email,
     password,
     otp,
@@ -41,20 +40,23 @@ const login = asyncWrapper(async (req, res) => {
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const user = await User.findOne({ email });
+  const user = await User.findOne({
+    where: {
+      email,
+    },
+  });
   if (!user) throw new ApiError("email or password is incorrect", 500);
+  if (!user.Auth(password)) throw new ApiError("email or password is incorrect", 500);
+  const authToken = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, {
+    expiresIn: 1000 * 60 * 60 * 24 * 30,
+  });
   if (!user.confirmed) {
     const { otp, otpExpiry } = GenerateOTP();
-    await user.updateOne({ otp, otpExpiry });
+    await user.update({ otp, otpExpiry });
     SendOTP(email, otp);
     const verifyUserToken = jwt.sign({ email }, process.env.VERIFY_SECRET);
     throw new ApiError("the email is unconfirmed", 500, verifyUserToken);
   }
-  if (!user.Auth(password))
-    throw new ApiError("email or password is incorrect", 500);
-  const authToken = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: 1000 * 60 * 60 * 24 * 30,
-  });
   res.status(200).json({
     status: 1,
     data: { authToken },
@@ -62,21 +64,30 @@ const login = asyncWrapper(async (req, res) => {
 });
 
 const updateUser = asyncWrapper(async (req, res) => {
-  const {
-    value: { name, email, password, appearance, auto_delete },
+  let {
+    value: { username, email, password, appearance, auto_delete },
     error,
   } = userValidators.updateUserValidate(req.body);
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const user = await User.findOneAndUpdate(
-    { _id: req.UserId },
-    { name, email, password, appearance, auto_delete },
-    { new: true, runValidators: true }
+  await User.update(
+    {
+      username,
+      email,
+      password,
+      appearance,
+      auto_delete,
+    },
+    {
+      where: {
+        userId: req.userId,
+      },
+    }
   );
   if (password) {
     const authToken = jwt.sign(
-      { UserId: user._id, update: true },
+      { userId: req.userId, update: true },
       process.env.JWT_SECRET,
       {
         expiresIn: 1000 * 60 * 60 * 24 * 30,
@@ -104,12 +115,28 @@ const confirmedUser = asyncWrapper(async (req, res) => {
   }
   const token = req.get("verifyUserToken").split(" ")[1];
   const email = jwt.verify(token, process.env.VERIFY_SECRET).email;
-  const user = await User.findOneAndUpdate(
-    { email, otp, otpExpiry: { $gt: Date.now() } },
-    { confirmed: true, $unset: { otp: "", otpExpiry: "" } }
+  const user = await User.update(
+    {
+      confirmed: true,
+      otp: null,
+      otpExpiry: null,
+    },
+    {
+      where: {
+        email,
+        otp,
+        otpExpiry: {
+          [Op.gte]: Date.now(),
+        },
+      },
+    }
   );
-  if (user) {
-    const authToken = jwt.sign({ UserId: user._id }, process.env.JWT_SECRET, {
+  const { userId } = await User.findOne({
+    attributes: ["userId"],
+    where: { email },
+  });
+  if (user[0]) {
+    const authToken = jwt.sign({ userId: userId }, process.env.JWT_SECRET, {
       expiresIn: 1000 * 60 * 60 * 24 * 30,
     });
     return res.status(200).json({
@@ -122,19 +149,18 @@ const confirmedUser = asyncWrapper(async (req, res) => {
 
 const deleteuser = asyncWrapper(async (req, res) => {
   const {
-    value: { UserId, password },
+    value: { userId, password },
     error,
   } = userValidators.deleteUserValidate({
-    UserId: req.UserId,
+    userId: req.userId,
     password: req.body.password,
   });
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const user = await User.findOne({ _id: UserId });
+  const user = await User.findByPk(userId);
   if (user.Auth(password)) {
-    await User.deleteOne({ _id: UserId });
-    await Task.deleteOne({ UserId });
+    await user.destroy();
     return res.status(202).json({ status: 1, data: null });
   }
   throw new ApiError("wrong password", 500);
@@ -145,7 +171,14 @@ const resendOTP = asyncWrapper(async (req, res) => {
   const email = jwt.verify(token, process.env.VERIFY_SECRET).email;
   if (email) {
     const { otp, otpExpiry } = GenerateOTP();
-    await User.updateOne({ email }, { otp, otpExpiry });
+    await User.update(
+      { otp, otpExpiry },
+      {
+        where: {
+          email,
+        },
+      }
+    );
     SendOTP(email, otp);
     return res.json({
       status: 1,

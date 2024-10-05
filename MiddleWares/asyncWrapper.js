@@ -3,7 +3,7 @@ const asyncWrapper=(fn)=>{
         try {
             await fn(req,res,next);
         } catch (error) {
-            if(error.code==11000)
+            if(error.name=='SequelizeUniqueConstraintError')
                 error.message="the email is already used"
             next(error)
         }

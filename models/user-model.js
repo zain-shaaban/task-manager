@@ -1,79 +1,59 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../utils/DBoptions");
 const bcrypt = require("bcryptjs");
 
-const userSchema = new mongoose.Schema(
-  {
-    tasks: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Task",
-      },
-    ],
-    name: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    appearance: {
-      type: Number,
-      default: 1,
-    },
-    confirmed: {
-      type: Boolean,
-      default: false,
-    },
-    auto_delete: {
-      type: Boolean,
-      default: false,
-    },
-    email: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    exp: {
-      type: Number,
-      default: -1,
-    },
-    otp: {
-      type: String,
-      minLength: 6,
-      maxLength: 6,
-    },
-    otpExpiry: {
-      type: Number,
+const User = sequelize.define("User", {
+  userId: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate:{
+      isEmail:true
+    }
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    set(value) {
+      if(value)
+        this.setDataValue('password',bcrypt.hashSync(value, bcrypt.genSaltSync()));
     },
   },
-  {
-    toJSON: {
-      transform(doc, ret) {
-        delete ret.otp;
-        delete ret.otpExpiry;
-        delete ret.__v;
-        delete ret._id;
-        delete ret.password;
-        delete ret.confirmed;
-        delete ret.exp;
-      },
-    },
-  }
-);
-
-
-userSchema.pre("findOneAndUpdate", function (next) {
-  if (this._update.password)
-    this._update.password = bcrypt.hashSync(
-      this._update.password,
-      bcrypt.genSaltSync()
-    );
-  next();
+  appearance: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1,
+  },
+  confirmed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  auto_delete: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  exp: {
+    type: DataTypes.BIGINT,
+    defaultValue: -1,
+  },
+  otp: {
+    type: DataTypes.STRING(6),
+  },
+  otpExpiry: {
+    type: DataTypes.BIGINT,
+  },
 });
+User.prototype.Auth=function(password){
+  return bcrypt.compareSync(password,this.password)
+}
+User.sync({force:true});
 
-userSchema.method("Auth", function (password) {
-  return bcrypt.compareSync(password, this.password);
-});
-
-module.exports = mongoose.model("User", userSchema);
+module.exports = User;

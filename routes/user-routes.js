@@ -1,5 +1,4 @@
 const express = require("express");
-const { loginLimiter, confirmLimiter } = require("../MiddleWares/rateLimiter");
 const { Autherizarion } = require("../MiddleWares/auth");
 const {
   register,
@@ -232,25 +231,28 @@ router.route("/api/user/confirm").patch(confirmedUser);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
  *             properties:
+ *               username:
+ *                 type: string
+ *                 description: New user name
  *               email:
  *                 type: string
  *                 description: Email of the account
  *               password:
  *                 type: string
  *                 description: Password of the account
- *               apperance:
+ *               appearance:
  *                 type: number
- *                 description: Apperance status, its 1 by default
+ *                 description: Appearance status, its 1 by default
  *               auto_delete:
  *                 type: boolean
  *                 description: Option to delete completed tasks directly, its false by default
  *             example:
+ *               username: test test
  *               email: test@gmail.com
  *               password: test123
- *               apperance: 3
- *               auto-delete: 1
+ *               appearance: 3
+ *               auto_delete: true
  *     responses:
  *       200:
  *         description: The user information has updated successfully

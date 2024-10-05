@@ -1,36 +1,50 @@
-const mongoose = require("mongoose");
-const taskSchema = new mongoose.Schema({
-  content: {
-    type: String,
-    required: true,
+const { DataTypes } = require("sequelize");
+const sequelize = require("../utils/DBoptions");
+const User = require("./user-model");
+const Task = sequelize.define(
+  "Task",
+  {
+    taskId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    content: {
+      type: DataTypes.STRING(500),
+      allowNull: false,
+    },
+    important: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    completed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    date: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    last_updated: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "users",
+        key: "userId",
+      },
+    },
   },
-  date: {
-    type: Number,
-    required: true,
-  },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref:"User"
-  },
-  important: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  completed: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  last_updated: {
-    type: Number,
-    required: true,
-  },
-},{toJSON:{
-  transform(doc,ret){
-    delete ret.__v;
-    delete ret.user;
+  {
+    timestamps: false,
   }
-}});
+);
 
-module.exports = mongoose.model("Task", taskSchema);
+User.hasMany(Task, { foreignKey: "userId", as: "tasks" });
+Task.belongsTo(User, { foreignKey: "userId" });
+
+Task.sync({force:true});
+
+module.exports = Task;

@@ -1,19 +1,30 @@
 require("dotenv").config();
-const Task = require("../models/task-model");
 const User = require("../models/user-model");
+const Task = require("../models/task-model");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const ApiError = require("../utils/ApiError");
 const taskValidator = require("../MiddleWares/taskValidator");
+const { Op } = require("sequelize");
 
 const getTasks = asyncWrapper(async (req, res) => {
   await deleteCompletedTasks();
-  const user = await User.findById(req.UserId).populate({
-    path: "tasks",
-    options: { sort: { date: "asc" } },
+  const userWithTasks = await User.findOne({
+    where: { userId: req.userId },
+    attributes: ["username", "appearance", "email", "auto_delete"],
+    include: [
+      {
+        model: Task,
+        as: "tasks",
+        attributes: { exclude: ["userId"] },
+      },
+    ],
   });
+  if (userWithTasks && userWithTasks.tasks) {
+    userWithTasks.tasks.sort((a, b) => a.last_updated - b.last_updated);
+  }
   res.status(200).json({
     status: 1,
-    data: user,
+    data: userWithTasks,
   });
 });
 
@@ -25,20 +36,17 @@ const addtask = asyncWrapper(async (req, res) => {
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const user = await User.findById(req.UserId);
   const newTask = await Task.create({
     content,
     date,
     last_updated: date,
-    user,
+    userId: req.userId,
     important,
     completed,
   });
-  user.tasks.push(newTask);
-  await user.save();
   res.status(201).json({
     status: 1,
-    data: { id: newTask._id },
+    data: { id: newTask.taskId },
   });
 });
 
@@ -50,13 +58,12 @@ const deleteTask = asyncWrapper(async (req, res) => {
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const user = await User.findById(req.UserId);
   for (let id of ids) {
-    const task = await Task.findByIdAndDelete(id);
-    if (!task) throw new ApiError(`this task id is not exist ${id}`, 404);
-    const index = user.tasks.indexOf(id);
-    user.tasks.splice(index, 1);
-    await user.save();
+    await Task.destroy({
+      where: {
+        taskId: id,
+      },
+    });
   }
   res.status(202).json({
     status: 1,
@@ -72,12 +79,15 @@ const updatetask = asyncWrapper(async (req, res) => {
   if (error) {
     throw new ApiError(error.details[0].message);
   }
-  const task = await Task.findByIdAndUpdate(
-    id,
+  const task = await Task.update(
     { content, last_updated, important, completed },
-    { new: true, runValidators: true }
+    {
+      where: {
+        taskId: id,
+      },
+    }
   );
-  if (task)
+  if (task[0])
     return res.status(203).json({
       status: 1,
       data: null,
@@ -86,9 +96,13 @@ const updatetask = asyncWrapper(async (req, res) => {
 });
 
 const deleteCompletedTasks = async () => {
-  await Task.deleteMany({
-    completed: true,
-    date: { $lt: Date.now() - 1000 * 60 * 60 * 24 * 7 },
+  await Task.destroy({
+    where: {
+      completed: true,
+      date: {
+        [Op.lt]: Date.now() - 1000 * 60 * 60 * 24 * 7,
+      },
+    },
   });
 };
 

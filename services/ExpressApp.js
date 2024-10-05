@@ -33,8 +33,8 @@ module.exports = async (app) => {
   };
   const swaggerConfig = swaggerDOC(options);
 
-  app.use("/", require("../routes/task-routes"));
   app.use("/", require("../routes/user-routes"));
+  app.use("/", require("../routes/task-routes"));
   app.use("/", require("../routes/offline-mode"));
 
   app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerConfig));

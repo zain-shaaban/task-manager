@@ -2,7 +2,7 @@ const Joi = require("joi");
 class UserValidator {
   registerValidate(body) {
     const schema = Joi.object({
-      name: Joi.string().required().max(30),
+      username: Joi.string().required().max(30),
       email: Joi.string().required().email().min(3).max(30),
       password: Joi.string().required().min(8).max(30),
     });
@@ -17,7 +17,7 @@ class UserValidator {
   }
   updateUserValidate(body) {
     const schema = Joi.object({
-      name: Joi.string().min(3).max(30),
+      username: Joi.string().min(3).max(30),
       email: Joi.string().email().min(3).max(30),
       password: Joi.string().min(8).max(30),
       appearance: Joi.number(),
@@ -33,7 +33,7 @@ class UserValidator {
   }
   deleteUserValidate(body) {
     const schema = Joi.object({
-      UserId: Joi.string().required().min(3).max(30),
+      userId: Joi.number().required(),
       password: Joi.string().required().max(30),
     });
     return schema.validate(body);

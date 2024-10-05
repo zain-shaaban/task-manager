@@ -1,10 +1,11 @@
 const express = require("express");
-const Task = require("../models/task-model");
 const User = require("../models/user-model");
+const Task = require("../models/task-model");
 const asyncWrapper = require("../MiddleWares/asyncWrapper");
 const { Autherizarion } = require("../MiddleWares/auth");
 const OfflineValidator = require("../MiddleWares/offlineValidator");
 const ApiError = require("../utils/ApiError");
+const { Op } = require("sequelize");
 const router = express.Router();
 
 /**
@@ -36,13 +37,14 @@ const router = express.Router();
  *                 items:
  *                   type: object
  *                   required:
+ *                     - taskId
  *                     - content
  *                     - date
  *                     - important
  *                     - completed
  *                   properties:
- *                     _id:
- *                       type: string
+ *                     taskId:
+ *                       type: number
  *                       description: temporary id
  *                     content:
  *                       type: string
@@ -57,7 +59,7 @@ const router = express.Router();
  *                       type: boolean
  *                       description: Task Status, its false by default
  *                   example:
- *                     _id: 66b4fc22026424b198ce0bdd
+ *                     taskId: 6
  *                     content: go to the gym
  *                     date: 123654981651
  *                     important: true
@@ -68,11 +70,11 @@ const router = express.Router();
  *                 items:
  *                   type: object
  *                   required:
- *                     - _id
+ *                     - taskId
  *                     - last_updated
  *                   properties:
- *                     _id:
- *                       type: string
+ *                     taskId:
+ *                       type: number
  *                       description:
  *                     content:
  *                       type: string
@@ -87,7 +89,7 @@ const router = express.Router();
  *                       type: boolean
  *                       description: Task Status, its false by default
  *                   example:
- *                     _id: 54b4fc22026424b198ce0bcc
+ *                     taskId: 5
  *                     content: go to the gym
  *                     last_updated: 123654981651
  *                     important: true
@@ -95,10 +97,10 @@ const router = express.Router();
  *               deleteArray:
  *                 type: array
  *                 items:
- *                   type: string
+ *                   type: number
  *                   description: Task IDs you want to delete
  *                 example:
- *                   ["54b4fc22026424b198ce0bcc" , "66b4fc22026424b198ce0bdd"]
+ *                   [10, 25]
  *     responses:
  *       200:
  *         description: All the operations completed successfully
@@ -121,7 +123,7 @@ const router = express.Router();
  *               with add tasks:
  *                 value:
  *                   status: 1
- *                   data: {idPairs: [ {fakeID: 54b4fc22026424b198ce0bcc,realID: 66b4fc22026424b198ce0bdd}]}
+ *                   data: {idPairs: [ {fakeID: 6,realID: 25}]}
  *       500:
  *         description: The token is invalid any more
  *         content:
@@ -150,35 +152,37 @@ router.route("/api/offline").post(
     if (error) {
       throw new ApiError(error.details[0].message);
     }
-    const user = await User.findById(req.UserId);
-    for (let taskId of deleteArray) {
-      const task = await Task.findByIdAndDelete({ _id: taskId });
-      const index = user.tasks.indexOf(task);
-      user.tasks.splice(index, 1);
-      await user.save();
-    }
+    await Task.destroy({
+      where: {
+        taskId: {
+          [Op.in]: deleteArray,
+        },
+      },
+    });
     for (let task of updateArray) {
-      const { _id, content, last_updated, important, completed } = task;
-      await Task.findByIdAndUpdate(
-        _id,
+      const { taskId, content, last_updated, important, completed } = task;
+      await Task.update(
         { content, last_updated, important, completed },
-        { runValidators: true }
+        {
+          where: {
+            taskId,
+          },
+        }
       );
     }
+
     const idPairs = [];
     for (let task of addArray) {
-      const { _id, content, date, important, completed } = task;
+      const { taskId, content, date, important, completed } = task;
       const newTask = await Task.create({
         content,
         date,
         last_updated: date,
-        UserId: req.UserId,
         important,
         completed,
+        userId: req.userId,
       });
-      user.tasks.push(newTask);
-      await user.save();
-      idPairs.push({ fakeID: _id, realID: newTask._id });
+      idPairs.push({ fakeID: taskId, realID: newTask.taskId });
     }
     if (idPairs.length != 0) return res.json({ status: 1, data: { idPairs } });
     res.json({ status: 1, data: null });

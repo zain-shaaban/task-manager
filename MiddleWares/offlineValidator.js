@@ -2,10 +2,10 @@ const Joi = require("joi");
 class OfflineValidator {
   validate(body) {
     const schema = Joi.object({
-      deleteArray: Joi.array().items(Joi.string().max(30)).required(),
+      deleteArray: Joi.array().items(Joi.number()).required(),
       updateArray: Joi.array().items(
         Joi.object({
-          _id: Joi.string().required().max(30),
+          taskId: Joi.number().required(),
           content: Joi.string().max(50),
           last_updated: Joi.number().required(),
           important: Joi.boolean(),
@@ -15,7 +15,7 @@ class OfflineValidator {
       addArray: Joi.array()
         .items(
           Joi.object({
-            _id: Joi.string().max(30),
+            taskId: Joi.number().required(),
             content: Joi.string().max(50),
             date: Joi.number(),
             important: Joi.boolean(),
