@@ -54,6 +54,6 @@ const User = sequelize.define("User", {
 User.prototype.Auth=function(password){
   return bcrypt.compareSync(password,this.password)
 }
-User.sync({force:true});
+User.sync();
 
 module.exports = User;

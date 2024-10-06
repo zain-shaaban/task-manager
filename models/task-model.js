@@ -45,6 +45,6 @@ const Task = sequelize.define(
 User.hasMany(Task, { foreignKey: "userId", as: "tasks" });
 Task.belongsTo(User, { foreignKey: "userId" });
 
-Task.sync({force:true});
+Task.sync();
 
 module.exports = Task;
