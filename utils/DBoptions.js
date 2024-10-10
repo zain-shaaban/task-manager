@@ -6,8 +6,8 @@ module.exports = new Sequelize(
   process.env.DB_PASSWORD,
   {
     dialect: "mysql",
-    host: "sql12.freesqldatabase.com",
-    port: 3306,
+    host: "mysql-canvas-canvas-project.e.aivencloud.com",
+    port: 12157,
     logging:false
   }
 );
