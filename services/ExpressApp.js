@@ -2,7 +2,6 @@ require("dotenv").config();
 const swaggerDOC = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const cors = require("cors");
-const helmet = require("helmet");
 const limiter = require("../MiddleWares/rateLimiter");
 const errorHandler = require("../MiddleWares/errorHandler");
 const notFound = require("../MiddleWares/404");
@@ -10,7 +9,6 @@ const express = require("express");
 
 
 module.exports = async (app) => {
-  app.use(helmet());
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
