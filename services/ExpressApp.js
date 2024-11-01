@@ -24,7 +24,7 @@ module.exports = async (app) => {
       },
       servers: [
         {
-          url: "https://task-manager-back-end-7gbe.onrender.com",
+          url: "https://task-manager-cxaa.onrender.com",
         },
       ],
     },
